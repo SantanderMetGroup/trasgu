@@ -9,7 +9,7 @@ If you only want to try `trasgu`, GitHub Codespaces provides a ready-to-use envi
 ## Install
 
 ```bash
-git clone https://github.com/fernanqv/trasgu.git
+git clone https://github.com/SantanderMetGroup/trasgu.git
 cd trasgu
 uv sync --frozen --no-dev
 ```

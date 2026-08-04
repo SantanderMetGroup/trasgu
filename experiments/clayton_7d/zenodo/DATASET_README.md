@@ -46,7 +46,7 @@ shasum -a 256 -c metadata/SHA256SUMS
 
 ## Related software
 
-- Trasgu repository: https://github.com/fernanqv/trasgu
+- Trasgu repository: https://github.com/SantanderMetGroup/trasgu
 - Trasgu release/tag used for publication: pending
 - Dataset DOI: pending
 
