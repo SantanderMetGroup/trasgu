@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: >-
+  If you use these experimental data, please cite the Zenodo record and the
+  accompanying Trasgu SoftwareX article.
+type: dataset
+title: Experimental data for the Trasgu SoftwareX article
+version: 1.0.0
+license: MIT
+authors:
+  - family-names: Fernández-Quiruelas
+    given-names: Valvanuz
+  - family-names: "'t Hart"
+    given-names: Marcel
+  - family-names: Mares-Nasarre
+    given-names: Patricia
+  - family-names: Morales-Nápoles
+    given-names: Oswaldo
+repository-code: https://github.com/fernanqv/trasgu

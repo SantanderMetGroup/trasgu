@@ -1,0 +1,16 @@
+Environment reported by trasgu_run.log
+======================================
+
+Platform: Linux 5.14.0-611.55.1.el9_7, x86_64
+Processor: Intel Xeon Silver 4208 CPU at 2.10 GHz
+Host: login2.ifca.es
+Python: 3.12.13
+Snakemake: 9.23.1
+Chimera matrices: 2,580,480 seven-dimensional structures
+Trasgu chunk size: 260,000 matrices
+Configured Trasgu max_workers: 16
+SLURM jobs exposed to nested Snakemake: 100
+
+The original SLURM profile and complete main logs are included in the data
+package. Package versions not printed by the execution log were not recovered
+after the run and must not be inferred from the current development lockfile.

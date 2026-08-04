@@ -1,0 +1,12 @@
+README.md
+metadata/execution_commands.txt
+metadata/execution_environment.txt
+metadata/software_revision.txt
+metadata/SHA256SUMS
+workflow_snapshots/
+runs_by_sample_size/
+repeated_300/summary/
+sample_size_scaling/summary/
+sample_size_scaling/timing_logs/
+representative_full_fits/iteration_99_300/
+representative_full_fits/iteration_1_3000/

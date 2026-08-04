@@ -1,5 +1,6 @@
 build/
 dist/
+.DS_Store
 __pycache__/
 *.egg-info/
 .pytest_cache
@@ -9,3 +10,5 @@ simulations/
 .uv/
 src/trasgu/examples/*/.trasgu_*/
 src/trasgu/examples/*/fit_*.csv
+paper/
+/experiments/logs/

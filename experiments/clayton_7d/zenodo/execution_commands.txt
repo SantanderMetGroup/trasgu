@@ -1,0 +1,25 @@
+Repeated 300-observation experiment
+===================================
+
+Command recorded in the historical Snakefile:
+
+snakemake --snakefile Snakefile --config iterations=100 --cores 5
+
+
+Sample-size experiment
+======================
+
+The same Snakefile was used with one iteration in each sample-size directory.
+The effective invocation was equivalent to:
+
+snakemake --snakefile Snakefile --config iterations=1 --cores 5
+
+
+Nested Trasgu execution
+=======================
+
+Each iteration invoked:
+
+trasgu_run --profile /path/to/sample-size/slurm_profile.yaml
+
+The exact absolute commands and paths are preserved in each trasgu_run.log.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Measure rank correlations (requires the optional ``analysis`` dependencies)."""
+
 import argparse
 from pathlib import Path
 

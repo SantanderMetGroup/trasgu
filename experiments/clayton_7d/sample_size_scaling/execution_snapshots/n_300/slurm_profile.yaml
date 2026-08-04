@@ -1,10 +1,11 @@
 executor: slurm
-jobs: 400
+jobs: 100
 latency-wait: 60
 printshellcmds: true
 rerun-incomplete: true
-#max-jobs-per-timespan: 1/2s
+slurm-delete-logfiles-older-than: 0
+slurm-keep-successful-logs: True
 default-resources:
-  slurm_partition: "wncompute_ifca"
+  slurm_partition: "wncompute_meteo"
   runtime: 1200 # minutes
   mem_mb_per_cpu: 1000

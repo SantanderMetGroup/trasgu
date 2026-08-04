@@ -1,0 +1,17 @@
+Execution revision provenance
+=============================
+
+Last Git commit preceding the first logged execution:
+
+c07f8651a637191429f2f5affb17e3d8de4ab04d
+Add snakemake to Print the best fit in a file
+2026-07-21 14:09:09 +0200
+
+The execution logs begin on 2026-07-22. The exact Git worktree status was not
+recorded in those logs, so this commit is a temporal upper-bound candidate and
+must not be presented as a cryptographically proven execution revision. Exact
+copies of the workflow, configuration, and helper scripts used for the runs
+are included under workflow_snapshots.
+
+Publication release/tag: pending
+Publication commit: pending

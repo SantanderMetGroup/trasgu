@@ -128,6 +128,20 @@ pytest
 ruff check .
 ```
 
+## Scientific experiments
+
+Article-scale case studies live under `experiments/`, separately from the
+small examples packaged with Trasgu:
+
+- `clayton_7d` contains the code snapshots and compact results for repeated
+  seven-dimensional synthetic fits and sample-size scaling. Complete outputs
+  are prepared for the accompanying Zenodo data deposit.
+- `ship_wake` contains the eight-variable ship-wake case study.
+
+See [`experiments/README.md`](experiments/README.md) for the distinction
+between execution snapshots, committed summaries, and the common external data
+record containing both experiments.
+
 ## Benchmarks
 
 Controlled performance measurements live under `benchmarks/`. They are kept

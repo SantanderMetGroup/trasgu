@@ -60,7 +60,7 @@ rule run_trasgu_simulation:
     shell:
         """
         cd {params.run_dir}
-        trasgu_run {params.extra_args} > {log} 2>&1
+        trasgu_run --profile {params.profile} {params.extra_args} > {log} 2>&1
         """
 
 
