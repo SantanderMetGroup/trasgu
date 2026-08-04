@@ -309,6 +309,28 @@ def test_measure_fitting_time_uses_available_matrix_count(trasgu_config, monkeyp
     assert loaded_ranges == [(0, 5)]
 
 
+def test_measure_fitting_time_uses_requested_chunk_size(trasgu_config, monkeypatch):
+    loaded_ranges = []
+    original_loader = trasgu_config._load_matrices_from_zarr
+    monkeypatch.setattr(
+        trasgu_config,
+        "_load_matrices_from_zarr",
+        lambda start, end: (
+            loaded_ranges.append((start, end)),
+            original_loader(start, end),
+        )[1],
+    )
+
+    trasgu_config.measure_fitting_time(chunk_size=2)
+
+    assert loaded_ranges == [(0, 2)]
+
+
+def test_measure_fitting_time_rejects_non_positive_chunk_size(trasgu_config):
+    with pytest.raises(ValueError, match="chunk_size must be greater than zero"):
+        trasgu_config.measure_fitting_time(chunk_size=0)
+
+
 def test_fit_vinecop_chunk_to_file_writes_expected_rows(trasgu_config):
     results = trasgu_config.fit_vinecop_chunk_to_file(chunk_index=1)
 

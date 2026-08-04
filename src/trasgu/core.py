@@ -639,7 +639,7 @@ class Trasgu:
 
         return (first_vine, last_vine)
 
-    def measure_fitting_time(self) -> float:
+    def measure_fitting_time(self, chunk_size: int = 100) -> float:
         """Measure execution time for fitting a chunk of vine copulas.
 
         Args:
@@ -648,7 +648,10 @@ class Trasgu:
         Returns:
            Time in minutes to fit a full chunk as per config.
         """
-        chunk_size_short = min(1000, self.get_number_of_trasgu_matrices())
+        if chunk_size < 1:
+            raise ValueError("chunk_size must be greater than zero")
+
+        chunk_size_short = min(chunk_size, self.get_number_of_trasgu_matrices())
         first_vine = 0
         data = self.data
         logger.debug(
