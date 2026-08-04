@@ -21,30 +21,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
-          auto-update-conda: true
-
-      - name: Create conda environment
-        run: conda create -n trasgu python=${{ matrix.python-version }}
+          enable-cache: true
 
       - name: Install dependencies
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate trasgu
-          pip install -e .[dev]
+        run: uv sync --frozen --python ${{ matrix.python-version }}
 
       - name: Run Ruff
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate trasgu
-          ruff check .
+        run: uv run --frozen ruff check .
 
       - name: Run tests
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate trasgu
-          pytest
+        run: uv run --frozen pytest

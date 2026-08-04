@@ -9,13 +9,13 @@ uv sync --frozen
 ## Run tests
 
 ```bash
-pytest
+uv run pytest
 ```
 
 ## Run linting
 
 ```bash
-ruff check .
+uv run ruff check .
 ```
 
 ## CLI help tests
@@ -31,11 +31,11 @@ Documentation source files live in `docs/` and are configured by `mkdocs.yml`.
 Serve locally:
 
 ```bash
-mkdocs serve
+uvx --with mkdocs-material mkdocs serve
 ```
 
 Build locally:
 
 ```bash
-mkdocs build --strict
+uvx --with mkdocs-material mkdocs build --strict
 ```

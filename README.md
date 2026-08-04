@@ -6,6 +6,21 @@ It supports local execution through Snakemake and HPC execution through SLURM pr
 
 ## Installation
 
+Install the latest published release as a command-line tool:
+
+```bash
+uv tool install trasgu
+```
+
+Trasgu is a standard Python package, so installation with `pip` is also
+supported:
+
+```bash
+python -m pip install trasgu
+```
+
+To use the locked environment from a source checkout:
+
 ```bash
 git clone https://github.com/SantanderMetGroup/trasgu.git
 cd trasgu
@@ -102,14 +117,13 @@ The documentation source lives in `docs/` and is configured by `mkdocs.yml`.
 Build locally:
 
 ```bash
-pip install mkdocs-material
-mkdocs build --strict
+uvx --with mkdocs-material mkdocs build --strict
 ```
 
 Serve locally:
 
 ```bash
-mkdocs serve
+uvx --with mkdocs-material mkdocs serve
 ```
 
 Start with:
@@ -124,8 +138,8 @@ Start with:
 
 ```bash
 uv sync --frozen
-pytest
-ruff check .
+uv run pytest
+uv run ruff check .
 ```
 
 ## Scientific experiments
