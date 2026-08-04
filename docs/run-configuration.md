@@ -55,7 +55,7 @@ For complete `trasgu.yaml` variants, see [Examples](examples.md), including CSV 
 
 | Variables | Chimera matrices |
 | --- | ---: |
-| 4 | 12 |
+| 4 | 24 |
 | 5 | 480 |
 | 6 | 23,040 |
 | 7 | 2,580,480 |

@@ -128,6 +128,27 @@ pytest
 ruff check .
 ```
 
+## Benchmarks
+
+Controlled performance measurements live under `benchmarks/`. They are kept
+separate from scientific experiments and use the shared Matplotlib style in
+`styles/trasgu.mplstyle`.
+
+- `dimensional_workload` summarizes the fitting workload from four to eight
+  variables.
+- `pyvinecopulib_thread_scaling` measures the scaling of one fixed fit as the
+  number of `pyvinecopulib` threads increases.
+
+See [`benchmarks/README.md`](benchmarks/README.md) for the benchmark protocol
+and reproduction commands.
+
+## Validation
+
+Scientific validation workflows live under `validation/`. They compare Trasgu
+with reference fits and, where applicable, the previous manual implementation.
+See [`validation/README.md`](validation/README.md) for the available cases and
+reproduction commands.
+
 ## Cloud validation
 
 The `Cloud validation` GitHub Actions workflow runs the packaged Snakemake

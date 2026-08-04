@@ -12,6 +12,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
+HERE = Path(__file__).resolve().parent
+REPOSITORY_ROOT = HERE.parents[2]
+STYLE_FILE = REPOSITORY_ROOT / "styles" / "trasgu.mplstyle"
+
 STAMP = r"(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
 START = re.compile(rf"^{STAMP} .* Parallel fitting chunk (?P<chunk>\d+) .* using \d+ workers$")
 END = re.compile(rf"^{STAMP} .* Results saved to .*/fit_chunk_(?P<chunk>\d+)_\d+\.csv$")
@@ -82,6 +86,7 @@ def write_csv(rows: list[dict[str, object]], path: Path) -> None:
 
 
 def plot(rows: list[dict[str, object]], path: Path) -> None:
+    plt.style.use(STYLE_FILE)
     x = [int(row["sample_size"]) for row in rows]
     y = [float(row["total_trasgu_run_hours"]) for row in rows]
     fig, ax = plt.subplots(figsize=(9, 5.5))
@@ -92,9 +97,8 @@ def plot(rows: list[dict[str, object]], path: Path) -> None:
     ax.set(title="Summed trasgu_run time across all chunks",
            xlabel="Sample size", ylabel="Summed trasgu_run time (hours)")
     ax.set_xticks(x)
-    ax.grid(True, alpha=0.25)
     fig.tight_layout()
-    fig.savefig(path, dpi=180)
+    fig.savefig(path)
     plt.close(fig)
 
 

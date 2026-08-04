@@ -1,0 +1,27 @@
+font.family: sans-serif
+font.sans-serif: DejaVu Sans
+font.size: 10
+axes.titlesize: 12
+axes.titleweight: normal
+axes.labelsize: 11
+axes.labelweight: normal
+axes.prop_cycle: cycler('color', ['0072B2', 'D55E00', '009E73', 'CC79A7', 'E69F00', '56B4E9'])
+axes.grid: True
+axes.axisbelow: True
+axes.spines.top: False
+axes.spines.right: False
+figure.titlesize: 12
+figure.titleweight: normal
+legend.fontsize: 9
+legend.frameon: False
+xtick.labelsize: 9
+ytick.labelsize: 9
+grid.color: 0.8
+grid.linestyle: :
+grid.linewidth: 0.8
+grid.alpha: 0.6
+lines.linewidth: 2
+lines.markersize: 6
+savefig.dpi: 300
+savefig.bbox: tight
+savefig.pad_inches: 0.05

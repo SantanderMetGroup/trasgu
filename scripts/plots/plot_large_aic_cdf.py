@@ -12,27 +12,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-INPUT_FILE = Path("scripts/processed_aic_cdf.npz")
-OUTPUT_FILE = Path("scripts/large_aic_cdf.png")
+HERE = Path(__file__).resolve().parent
+REPOSITORY_ROOT = HERE.parents[1]
+INPUT_FILE = HERE.parent / "processed_aic_cdf.npz"
+OUTPUT_FILE = HERE / "large_aic_cdf.png"
+STYLE_FILE = REPOSITORY_ROOT / "styles" / "trasgu.mplstyle"
 DISSMANN_AIC = -560.74
 
 
 def main() -> None:
+    plt.style.use(STYLE_FILE)
     with np.load(INPUT_FILE, allow_pickle=False) as data:
         x = data["x"]
         cdf = data["cdf"]
         count = int(data["count"])
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    plt.figure(figsize=(9, 5))
-    plt.step(x, cdf, where="post", linewidth=1)
-    plt.axvline(
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.step(x, cdf, where="post")
+    ax.axvline(
         DISSMANN_AIC,
         color="tab:red",
         linestyle="--",
         linewidth=1.5,
     )
-    plt.annotate(
+    ax.annotate(
         f"Dissmann AIC = {DISSMANN_AIC:.2f}",
         xy=(DISSMANN_AIC, 0.95),
         xycoords=("data", "axes fraction"),
@@ -43,13 +47,10 @@ def main() -> None:
         ha="left",
         va="top",
     )
-    plt.xlabel("AIC")
-    plt.ylabel("CDF")
-    plt.title("AIC CDF")
-    plt.grid(True, alpha=0.4)
-    plt.tight_layout()
-    plt.savefig(OUTPUT_FILE, dpi=150)
-    plt.close()
+    ax.set(xlabel="AIC", ylabel="Cumulative probability", title="Distribution of fitted AIC values")
+    fig.tight_layout()
+    fig.savefig(OUTPUT_FILE)
+    plt.close(fig)
     print(f"Saved to {OUTPUT_FILE} ({count:,} finite values)")
 
 

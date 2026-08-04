@@ -1996,6 +1996,10 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+benchmarks = [
+    { name = "matplotlib" },
+    { name = "pandas" },
+]
 dev = [
     { name = "black" },
     { name = "pytest" },
@@ -2016,7 +2020,9 @@ dev = [
 requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=24.0" },
     { name = "fsspec", extras = ["http"], specifier = ">=2023.6.0" },
+    { name = "matplotlib", marker = "extra == 'benchmarks'", specifier = ">=3.8" },
     { name = "numpy", specifier = ">=1.23" },
+    { name = "pandas", marker = "extra == 'benchmarks'", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7" },
     { name = "pyvinecopulib", specifier = ">=0.6.0" },
     { name = "pyyaml", specifier = ">=6.0" },
@@ -2025,7 +2031,7 @@ requires-dist = [
     { name = "snakemake-executor-plugin-slurm", marker = "extra == 'slurm'", specifier = ">=0.10" },
     { name = "zarr", specifier = ">=3.0,<3.2" },
 ]
-provides-extras = ["slurm", "dev"]
+provides-extras = ["slurm", "benchmarks", "dev"]
 
 [package.metadata.requires-dev]
 dev = [

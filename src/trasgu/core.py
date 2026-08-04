@@ -32,7 +32,7 @@ logger = logging.getLogger("vine_config")
 logger.debug("Debug message")
 
 CHIMERA_TOTAL_RUNS = {
-    4: 12,
+    4: 24,
     5: 480,
     6: 23040,
     7: 2580480,
