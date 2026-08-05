@@ -128,11 +128,11 @@ uvx --with mkdocs-material mkdocs serve
 
 Start with:
 
-- [Getting started](docs/getting-started.md)
-- [Run configuration](docs/run-configuration.md)
-- [CLI reference](docs/cli-reference.md)
-- [SLURM and HPC](docs/slurm-hpc.md)
-- [Troubleshooting](docs/troubleshooting.md)
+- [Getting started](https://santandermetgroup.github.io/trasgu/getting-started/)
+- [Run configuration](https://santandermetgroup.github.io/trasgu/run-configuration/)
+- [CLI reference](https://santandermetgroup.github.io/trasgu/cli-reference/)
+- [SLURM and HPC](https://santandermetgroup.github.io/trasgu/slurm-hpc/)
+- [Troubleshooting](https://santandermetgroup.github.io/trasgu/troubleshooting/)
 
 ## Development
 
@@ -152,7 +152,7 @@ small examples packaged with Trasgu:
   are prepared for the accompanying Zenodo data deposit.
 - `ship_wake` contains the eight-variable ship-wake case study.
 
-See [`experiments/README.md`](experiments/README.md) for the distinction
+See [`experiments/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/experiments/README.md) for the distinction
 between execution snapshots, committed summaries, and the common external data
 record containing both experiments.
 
@@ -167,14 +167,14 @@ separate from scientific experiments and use the shared Matplotlib style in
 - `pyvinecopulib_thread_scaling` measures the scaling of one fixed fit as the
   number of `pyvinecopulib` threads increases.
 
-See [`benchmarks/README.md`](benchmarks/README.md) for the benchmark protocol
+See [`benchmarks/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/benchmarks/README.md) for the benchmark protocol
 and reproduction commands.
 
 ## Validation
 
 Scientific validation workflows live under `validation/`. They compare Trasgu
 with reference fits and, where applicable, the previous manual implementation.
-See [`validation/README.md`](validation/README.md) for the available cases and
+See [`validation/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/validation/README.md) for the available cases and
 reproduction commands.
 
 ## Cloud validation

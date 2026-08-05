@@ -9,6 +9,12 @@ description = "Vine copula fitting over Chimera Zarr structures"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 license = "MIT"
+keywords = [
+  "vine copulas",
+  "snakemake",
+  "zarr",
+  "scientific computing",
+]
 authors = [
   { name = "Valvanuz Fernandez Quiruelas" },
 ]
@@ -30,6 +36,12 @@ dependencies = [
   "pyvinecopulib>=0.6.0",
   "snakemake>=8",
 ]
+
+[project.urls]
+Homepage = "https://github.com/SantanderMetGroup/trasgu"
+Documentation = "https://santandermetgroup.github.io/trasgu/"
+Repository = "https://github.com/SantanderMetGroup/trasgu"
+Issues = "https://github.com/SantanderMetGroup/trasgu/issues"
 
 [project.optional-dependencies]
 slurm = [
