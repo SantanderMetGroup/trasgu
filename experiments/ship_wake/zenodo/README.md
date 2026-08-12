@@ -29,4 +29,4 @@ The original workflow, derived results, logs, manifests, and documentation are
 released under the MIT License. The license of the source ship-wake CSV must be
 confirmed separately; see `THIRD_PARTY_NOTICES.md` in the common deposit.
 
-Zenodo data DOI: pending.
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.

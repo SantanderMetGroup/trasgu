@@ -29,10 +29,38 @@ is covered only when its copyright holder has licensed it compatibly; see
 Before publication:
 
 1. confirm the origin and reuse terms of the ship-wake source CSV;
-2. replace all `pending` release and DOI fields;
+2. replace the pending publication release fields;
 3. verify the archive hashes against `SHA256SUMS`;
 4. upload the eight files above as one Zenodo record;
 5. select `MIT License` in Zenodo's license field;
 6. add the resulting DOI to both experiment READMEs and the article.
 
-Zenodo data DOI: pending.
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.
+
+Related archived objects:
+
+- Chimera matrices: https://doi.org/10.5281/zenodo.21804549
+- Trasgu software: https://doi.org/10.5281/zenodo.21806023
+
+## Building the deposit
+
+Build and verify the locally available ship-wake package from the repository
+root:
+
+```bash
+python3 experiments/zenodo/build_deposit.py
+```
+
+The command writes the upload-ready files to `experiments/zenodo/dist`, which
+is ignored by Git. It refuses to overwrite a non-empty output directory.
+
+To include Clayton, first arrange its external results according to
+`../clayton_7d/zenodo/MANIFEST.txt`, then run:
+
+```bash
+python3 experiments/zenodo/build_deposit.py \
+  --clayton-source /path/to/clayton_7d-softwarex-v1
+```
+
+The builder checks the required Clayton directories, generates internal and
+outer SHA-256 manifests, and creates deterministic gzip-compressed tar files.

@@ -5,6 +5,7 @@ message: >-
 type: dataset
 title: Experimental data for the Trasgu SoftwareX article
 version: 1.0.0
+doi: 10.5281/zenodo.21807187
 license: MIT
 authors:
   - family-names: Fernández-Quiruelas

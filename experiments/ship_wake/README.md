@@ -67,4 +67,4 @@ Original workflows, derived results, logs, and documentation are released
 under MIT. The provenance and reuse terms of the source ship-wake CSV must be
 confirmed separately before publishing the Zenodo record.
 
-Zenodo data DOI: pending.
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.

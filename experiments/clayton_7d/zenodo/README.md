@@ -23,4 +23,4 @@ The package is released under the MIT License. Before publishing, record the
 Zenodo DOI and replace the unresolved Trasgu execution revision in
 `metadata/software_revision.txt` if it can be recovered.
 
-Zenodo DOI: pending.
+Zenodo DOI: https://doi.org/10.5281/zenodo.21807187.

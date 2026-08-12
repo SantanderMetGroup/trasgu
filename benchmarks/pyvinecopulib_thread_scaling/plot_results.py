@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot measured pyvinecopulib thread scaling and parallel efficiency."""
+"""Plot measured pyvinecopulib thread scaling."""
 
 from __future__ import annotations
 
@@ -36,30 +36,16 @@ def main() -> None:
     plt.style.use(STYLE_FILE)
     threads, times_ms = load_results(RESULTS_FILE)
     speedup = times_ms[0] / times_ms
-    efficiency = speedup / threads
+    fig, axis = plt.subplots(figsize=(6.5, 4.2))
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
-
-    axes[0].plot(threads, speedup, marker="o", color=BLUE)
-    axes[0].set(
+    axis.plot(threads, speedup, marker="o", color=BLUE)
+    axis.set(
         xlabel="Allocated CPUs",
-        ylabel=r"Speedup $S(p)=T(1)/T(p)$",
-        title="(a) Scaling",
+        ylabel="Measured speedup",
+        title="Thread scaling for one eight-dimensional vine fit",
         xlim=(0, 50),
         xticks=np.arange(0, 49, 8),
     )
-
-    axes[1].plot(threads, efficiency, marker="o", color=BLUE)
-    axes[1].set(
-        xlabel="Allocated CPUs",
-        ylabel=r"Parallel efficiency $E(p)=S(p)/p$",
-        title="(b) Parallel efficiency",
-        xlim=(0, 50),
-        ylim=(0, 1.05),
-        xticks=np.arange(0, 49, 8),
-    )
-
-    fig.suptitle("Thread scaling for one eight-dimensional vine fit")
     fig.tight_layout()
 
     OUTPUT_STEM.parent.mkdir(parents=True, exist_ok=True)
