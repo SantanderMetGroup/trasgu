@@ -20,6 +20,7 @@ import heapq
 import re
 import pickle
 import logging
+import warnings
 from urllib.parse import urlparse
 
 # Configure logging
@@ -175,21 +176,35 @@ class Trasgu:
             logger.setLevel(logging.DEBUG)
             logger.debug("Debug mode enabled via configuration")
 
-        if not hasattr(self, "trasgu_url"):
+        has_chimera_url = hasattr(self, "chimera_url")
+        has_trasgu_url = hasattr(self, "trasgu_url")
+        if has_chimera_url and has_trasgu_url:
+            raise ValueError(
+                "Set only chimera_url in trasgu.yaml; trasgu_url is a deprecated alias."
+            )
+        if has_trasgu_url:
+            warnings.warn(
+                "trasgu_url is deprecated; use chimera_url in trasgu.yaml.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self.chimera_url = self.trasgu_url
+
+        if not hasattr(self, "chimera_url"):
             fs = fsspec.filesystem("http")
             self.trasgu_store = fs.get_mapper(
                 "http://meteo.unican.es/work/chimera.zarr"
             )
         else:
-            # If .trasgu_url is a local path, use local filesystem, else use HTTP
-            if not _is_url(self.trasgu_url):
-                self.trasgu_url = str(self._resolve_run_path(self.trasgu_url))
+            # If .chimera_url is a local path, use local filesystem, else use HTTP
+            if not _is_url(self.chimera_url):
+                self.chimera_url = str(self._resolve_run_path(self.chimera_url))
 
-            if os.path.exists(self.trasgu_url):
-                self.trasgu_store = self.trasgu_url
+            if os.path.exists(self.chimera_url):
+                self.trasgu_store = self.chimera_url
             else:
                 fs = fsspec.filesystem("http")
-                self.trasgu_store = fs.get_mapper(self.trasgu_url)
+                self.trasgu_store = fs.get_mapper(self.chimera_url)
 
         if not hasattr(self, "output_dir"):
             self.output_dir = str(self.config_dir / f".trasgu_{self.config_name}")

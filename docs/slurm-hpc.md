@@ -46,5 +46,5 @@ Check that:
 
 - `trasgu.yaml` points to accessible input data.
 - the chunk work directory (`.trasgu_<run>` by default, or `output_dir` if configured) is on storage visible to compute nodes.
-- `trasgu_url` is reachable from compute nodes, or points to a local Zarr copy.
+- `chimera_url` is reachable from compute nodes, or points to a local Zarr copy.
 - The requested variable size exists in the Chimera Zarr store.

@@ -46,7 +46,7 @@ def trasgu_config(tmp_path, monkeypatch):
         "\n".join(
             [
                 f"data_file: {data_path}",
-                "trasgu_url: http://example.invalid/trasgu.zarr",
+                "chimera_url: http://example.invalid/trasgu.zarr",
                 "chunk_size: 2",
                 f"output_dir: {output_dir}",
                 "max_workers: 1",
@@ -84,7 +84,7 @@ def make_config(tmp_path, data):
 def make_config_for_data_file(tmp_path, data_path, columns=None):
     lines = [
         f"data_file: {data_path}",
-        "trasgu_url: http://example.invalid/trasgu.zarr",
+        "chimera_url: http://example.invalid/trasgu.zarr",
         "chunk_size: 2",
         f"output_dir: {tmp_path / 'fit_results'}",
     ]
@@ -94,6 +94,35 @@ def make_config_for_data_file(tmp_path, data_path, columns=None):
     config_path = tmp_path / "trasgu.yaml"
     config_path.write_text("\n".join(lines) + "\n")
     return Trasgu(str(config_path))
+
+
+def test_accepts_deprecated_trasgu_url_alias(tmp_path):
+    data_path = tmp_path / "data.txt"
+    np.savetxt(data_path, np.full((3, 3), 0.5))
+    config_path = tmp_path / "trasgu.yaml"
+    config_path.write_text(
+        f"data_file: {data_path}\n"
+        "trasgu_url: http://example.invalid/chimera.zarr\n"
+    )
+
+    with pytest.warns(DeprecationWarning, match="use chimera_url"):
+        config = Trasgu(str(config_path))
+
+    assert config.chimera_url == "http://example.invalid/chimera.zarr"
+
+
+def test_rejects_chimera_url_with_deprecated_alias(tmp_path):
+    data_path = tmp_path / "data.txt"
+    np.savetxt(data_path, np.full((3, 3), 0.5))
+    config_path = tmp_path / "trasgu.yaml"
+    config_path.write_text(
+        f"data_file: {data_path}\n"
+        "chimera_url: http://example.invalid/chimera.zarr\n"
+        "trasgu_url: http://example.invalid/legacy.zarr\n"
+    )
+
+    with pytest.raises(ValueError, match="Set only chimera_url"):
+        Trasgu(str(config_path))
 
 
 @pytest.mark.parametrize(

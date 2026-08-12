@@ -17,7 +17,7 @@ def main():
         Notes:
           Use this on a node with internet access before running trasgu on
           compute nodes without external network access.
-          Point trasgu.yaml to the downloaded chimera.zarr store with trasgu_url.
+          Point trasgu.yaml to the downloaded chimera.zarr store with chimera_url.
           Variable size 8 is very large and requires interactive confirmation.
         """,
     )

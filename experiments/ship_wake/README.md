@@ -40,11 +40,11 @@ trasgu_run --profile slurm
 `PrepareData.py` writes `unity_inbound.txt`, which is intentionally not stored
 in Git because it is generated from the included source data. The preserved
 configuration points to the local Chimera Zarr store used for the execution.
-Replace `trasgu_url` with a path or URL accessible from the target system, for
+Replace `chimera_url` with a path or URL accessible from the target system, for
 example:
 
 ```yaml
-trasgu_url: /scratch/user/chimera.zarr
+chimera_url: /scratch/user/chimera.zarr
 ```
 
 The Dissmann comparison uses the same prepared observations:
