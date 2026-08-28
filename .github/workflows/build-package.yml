@@ -1,9 +1,9 @@
 name: Build and Publish Package
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types:
+      - published
 
 permissions:
   contents: read
