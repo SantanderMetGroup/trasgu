@@ -13,7 +13,7 @@ from matplotlib.ticker import FuncFormatter
 HERE = Path(__file__).resolve().parent
 REPOSITORY_ROOT = HERE.parents[1]
 RESULTS_FILE = HERE / "results" / "timings.csv"
-OUTPUT_FILE = HERE / "figures" / "dimensional_workload.png"
+OUTPUT_STEM = HERE / "figures" / "dimensional_workload"
 STYLE_FILE = REPOSITORY_ROOT / "styles" / "trasgu.mplstyle"
 
 BLUE = "#0072B2"
@@ -91,15 +91,17 @@ def main() -> None:
             fontsize=8,
             color=BLUE,
         )
-    for bar, value in zip(matrix_bars, matrices):
+    for index, (bar, value) in enumerate(zip(matrix_bars, matrices)):
+        is_last = index == len(matrix_bars) - 1
         matrix_axis.annotate(
             f"{value:,}",
             (bar.get_x() + bar.get_width() / 2, bar.get_height()),
-            xytext=(3, 4),
+            xytext=((0, -4) if is_last else (3, 4)),
             textcoords="offset points",
-            ha="left",
+            ha="center" if is_last else "left",
+            va="top" if is_last else "baseline",
             fontsize=8,
-            color=ORANGE,
+            color="white" if is_last else ORANGE,
         )
 
     handles = [time_bars, matrix_bars]
@@ -107,10 +109,12 @@ def main() -> None:
     time_axis.set_title("Vine fitting workload by dimensionality")
     fig.tight_layout()
 
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUTPUT_FILE)
+    OUTPUT_STEM.parent.mkdir(parents=True, exist_ok=True)
+    for extension in ("png", "pdf", "svg"):
+        output = OUTPUT_STEM.with_suffix(f".{extension}")
+        fig.savefig(output)
+        print(output)
     plt.close(fig)
-    print(OUTPUT_FILE)
 
 
 if __name__ == "__main__":

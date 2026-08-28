@@ -12,3 +12,4 @@ src/trasgu/examples/*/.trasgu_*/
 src/trasgu/examples/*/fit_*.csv
 paper/
 /experiments/logs/
+/experiments/ship_wake/UI-1_ship_and_wake_data_for_TUDelft.csv

@@ -57,7 +57,6 @@ def main() -> None:
     ax.set(
         xlabel="Absolute AIC difference from the fixed Clayton structure",
         ylabel="Cumulative proportion of simulations",
-        title="AIC differences across simulated datasets",
     )
     ax.legend()
     fig.tight_layout()

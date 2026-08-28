@@ -17,7 +17,7 @@ def main():
         Notes:
           Use this on a node with internet access before running trasgu on
           compute nodes without external network access.
-          Point trasgu.yaml to the downloaded chimera.zarr store with trasgu_url.
+          Point trasgu.yaml to the downloaded chimera.zarr store with chimera_url.
           Variable size 8 is very large and requires interactive confirmation.
         """,
     )
@@ -30,7 +30,11 @@ def main():
         "--vars",
         type=str,
         default="4,5,6,7",
-        help="Comma-separated list of variable sizes to download (e.g. 4,5,6,7,8). Default: 4,5,6,7. WARNING: size 8 is ~338GB.",
+        help=(
+            "Comma-separated list of variable sizes to download "
+            "(e.g. 4,5,6,7,8). Default: 4,5,6,7. "
+            "WARNING: size 8 is ~3.77 GB compressed (~42.28 GB uncompressed)."
+        ),
     )
     parser.add_argument(
         "--url",
@@ -53,7 +57,11 @@ def main():
 
     # Warn if size 8 is requested
     if 8 in var_sizes:
-        print("WARNING: You have selected variable size 8. This array is ~3 GB and will take a long time to download.")
+        print(
+            "WARNING: You have selected variable size 8. This array is "
+            "~3.77 GB compressed (~42.28 GB uncompressed) and will take a "
+            "long time to download."
+        )
         response = input("Do you want to continue? [y/N]: ")
         if response.lower() not in ("y", "yes"):
             print("Aborted.")

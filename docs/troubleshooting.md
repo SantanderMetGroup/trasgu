@@ -20,12 +20,12 @@ ls input6_500_gumbel_high.txt
 
 ## Zarr access fails
 
-If `trasgu_url` is not set, `trasgu` uses the remote Chimera Zarr store. On clusters, compute nodes may not have internet access.
+If `chimera_url` is not set, `trasgu` uses the remote Chimera Zarr store. On clusters, compute nodes may not have internet access.
 
 Use a local Zarr copy:
 
 ```yaml
-trasgu_url: /scratch/user/chimera.zarr
+chimera_url: /scratch/user/chimera.zarr
 ```
 
 Then verify:

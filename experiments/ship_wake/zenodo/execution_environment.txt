@@ -1,0 +1,13 @@
+Ship-wake execution environment
+===============================
+
+System: Altamira HPC infrastructure, University of Cantabria / IFCA-CSIC
+Scheduler: SLURM, orchestrated by Snakemake
+Initial phase: compute partition, 8 worker processes per chunk
+Resumed phase: wncompute_ifca partition, 32 worker processes per chunk
+Chunk size: 4,000,000 matrices
+Number of chunks: 166
+
+The exact infrastructure-specific configuration files are included under
+`workflow_snapshot`. Package versions not printed in the historical logs were
+not reconstructed.

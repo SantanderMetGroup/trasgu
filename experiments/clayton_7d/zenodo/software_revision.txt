@@ -13,5 +13,5 @@ must not be presented as a cryptographically proven execution revision. Exact
 copies of the workflow, configuration, and helper scripts used for the runs
 are included under workflow_snapshots.
 
-Publication release/tag: pending
-Publication commit: pending
+Publication release/tag: v0.1.0
+Publication commit: f580ad35a4bc030e4a6cf160d3cf9a141a9002c3

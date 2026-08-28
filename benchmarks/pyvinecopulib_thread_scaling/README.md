@@ -4,6 +4,11 @@ This benchmark measures repeated fits of one fixed eight-dimensional vine
 structure while varying `FitControlsVinecop.num_threads`. Execution order is
 randomized and the median duration is used for the scaling figure.
 
+The input contains 300 pseudo-observations synthetically generated using
+Clayton copulas with high dependence. The benchmark was run on the same
+infrastructure as the seven-dimensional Clayton experiments: an Intel Xeon
+Silver 4208 CPU at 2.10 GHz, using `pyvinecopulib` 0.7.6.
+
 Run the benchmark and regenerate the figure from the repository root:
 
 ```bash

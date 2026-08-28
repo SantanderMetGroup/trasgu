@@ -14,7 +14,7 @@ cd minimal
 | --- | --- | --- |
 | First local run | `minimal` | Basic `trasgu.yaml`, default remote Chimera store, default output paths. |
 | CSV input or selected columns | `csv_columns` | Comma-separated `data_file` plus the `columns` option. |
-| Local or offline Chimera store | `local_chimera` | `trasgu_url` pointing to a local `chimera.zarr`. |
+| Local or offline Chimera store | `local_chimera` | `chimera_url` pointing to a local `chimera.zarr`. |
 | Custom fitting controls | `custom_controls` | `controls_file` with a pickled `pyvinecopulib.FitControlsVinecop` object. |
 | Larger local run | `parallel_debug` | Larger input, larger `chunk_size`, `max_workers`, and `debug`. |
 | Cluster profiles | `profiles` | Snakemake profile files for SLURM-style execution. |
@@ -53,10 +53,10 @@ trasgu_examples local_chimera ./local-chimera
 cd local-chimera
 ```
 
-This example uses `trasgu_url` to point to a local Chimera Zarr store:
+This example uses `chimera_url` to point to a local Chimera Zarr store:
 
 ```yaml
-trasgu_url: /scratch/user/chimera.zarr
+chimera_url: /scratch/user/chimera.zarr
 ```
 
 Use this after downloading Chimera with `trasgu_download_zarr /scratch/user`, or when running on compute nodes without external HTTP access.

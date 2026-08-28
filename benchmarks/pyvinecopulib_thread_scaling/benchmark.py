@@ -14,7 +14,7 @@ import pyvinecopulib as pv
 
 
 HERE = Path(__file__).resolve().parent
-DATA_FILE = HERE.parent / "data" / "input8_300_gumbel_high.txt"
+DATA_FILE = HERE.parent / "data" / "input8_300_clayton_high.txt"
 RAW_RESULTS_FILE = HERE / "results" / "thread_timings.csv"
 SUMMARY_FILE = HERE / "results" / "thread_summary.csv"
 

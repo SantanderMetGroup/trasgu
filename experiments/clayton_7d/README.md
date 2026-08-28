@@ -57,4 +57,4 @@ published together with the ship-wake archive in one Zenodo data record. See
 `zenodo/README.md` for the Clayton archive layout and `../zenodo/README.md` for
 the common deposit. Replace the pending DOI after publication.
 
-Zenodo data DOI: pending.
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.

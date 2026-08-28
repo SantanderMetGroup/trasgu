@@ -23,8 +23,11 @@ chunk_size: 1000
 | `output_dir` | No | string | `.trasgu_<run>` | Advanced option for the chunk work directory. Relative paths are resolved from the run directory. |
 | `max_workers` | No | integer | `1` | Number of local worker processes used inside each chunk. |
 | `controls_file` | No | string | built-in controls | Pickled `pyvinecopulib.FitControlsVinecop` object. |
-| `trasgu_url` | No | string | remote Chimera Zarr | URL or local path to a Chimera Zarr store. |
+| `chimera_url` | No | string | remote Chimera Zarr | URL or local path to a Chimera Zarr store. |
 | `debug` | No | boolean | `false` | Enables debug logging when true. |
+
+`trasgu_url` remains accepted as a deprecated alias for `chimera_url`. Do not
+set both fields in the same configuration.
 
 ## Path handling
 
@@ -33,7 +36,7 @@ These fields accept run-directory-relative paths:
 - `data_file`
 - `output_dir`
 - `controls_file`
-- `trasgu_url`, when it is a local path rather than a URL
+- `chimera_url`, when it is a local path rather than a URL
 
 Example:
 
@@ -41,7 +44,7 @@ Example:
 data_file: input6_500_gumbel_high.txt
 output_dir: fit_results
 controls_file: controls.pkl
-trasgu_url: /scratch/user/chimera.zarr
+chimera_url: /scratch/user/chimera.zarr
 ```
 
 If `output_dir` is omitted, chunk CSV files are written to `.trasgu_<run>`.

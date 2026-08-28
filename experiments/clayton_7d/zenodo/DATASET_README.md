@@ -47,8 +47,10 @@ shasum -a 256 -c metadata/SHA256SUMS
 ## Related software
 
 - Trasgu repository: https://github.com/SantanderMetGroup/trasgu
-- Trasgu release/tag used for publication: pending
-- Dataset DOI: pending
+- Trasgu software DOI: https://doi.org/10.5281/zenodo.21806023
+- Chimera matrices dataset DOI: https://doi.org/10.5281/zenodo.21804549
+- Trasgu release/tag used for publication: v0.1.0
+- Experimental dataset DOI: https://doi.org/10.5281/zenodo.21807187
 
 The original workflows, synthetic data, results, figures, logs, and
 documentation in this package are released under the MIT License.

@@ -1,14 +1,15 @@
 # Dimensional workload
 
 This benchmark summarizes the workload required to fit every Chimera matrix
-for four to eight variables. Each input contains 300 pseudo-observations and
-the fitting setup uses one CPU core and the one-parameter families available
-in `pyvinecopulib`.
+for four to eight variables. Each input contains 300 pseudo-observations
+synthetically generated using Clayton copulas with high dependence. The
+fitting setup uses one CPU core and the one-parameter families available in
+`pyvinecopulib`.
 
-The values currently recorded in `results/timings.csv` are the values used by
-the existing article figure. Before publication, record the machine,
-`pyvinecopulib` version, repetition strategy, and whether each total was
-measured directly or extrapolated from per-fit timings.
+The benchmark was run on the same infrastructure as the seven-dimensional
+Clayton experiments: an Intel Xeon Silver 4208 CPU at 2.10 GHz, using
+`pyvinecopulib` 0.7.6. The values in `results/timings.csv` are those used by
+the article figure.
 
 Generate the figure from the repository root:
 

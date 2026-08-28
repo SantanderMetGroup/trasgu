@@ -1,0 +1,10 @@
+Execution revision provenance
+=============================
+
+The exact Git worktree status used for the historical ship-wake execution was
+not recorded. Exact copies of the workflow, configuration, and helper scripts
+used for the run are included under `workflow_snapshot`.
+
+Publication release/tag: v0.1.0
+Publication commit: f580ad35a4bc030e4a6cf160d3cf9a141a9002c3
+Software DOI: https://doi.org/10.5281/zenodo.21806023
