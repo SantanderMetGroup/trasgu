@@ -4,6 +4,11 @@ This experiment fits the eight variables selected from the ship-and-wake data
 set in `UI-1_ship_and_wake_data_for_TUDelft.csv`. The exhaustive search covers
 all 660,602,880 eight-dimensional Chimera matrices in 166 chunks.
 
+The source observations are not publicly available and are not distributed
+with this repository or the accompanying Zenodo record. To rerun the case
+study, an authorized copy must be placed at the path above before executing
+the preparation script.
+
 ## Repository contents
 
 - `PrepareData.py` creates the pseudo-observations used by both fits.
@@ -13,6 +18,9 @@ all 660,602,880 eight-dimensional Chimera matrices in 166 chunks.
   `Snakefile` recovered from Snakemake's source cache.
 - `results/best_fits.txt` contains the compact fitted-model summary committed
   to Git.
+- `processed_aic_cdf.npz` and `plot_large_aic_cdf.py` contain the processed
+  AIC distribution and generate the corresponding publication figure in
+  `results/`.
 - `zenodo/README.md` describes the raw result and logs kept outside Git for the
   accompanying data deposit.
 
@@ -38,7 +46,7 @@ trasgu_run --profile slurm
 ```
 
 `PrepareData.py` writes `unity_inbound.txt`, which is intentionally not stored
-in Git because it is generated from the included source data. The preserved
+in Git or Zenodo because it is derived from the non-public source data. The preserved
 configuration points to the local Chimera Zarr store used for the execution.
 Replace `chimera_url` with a path or URL accessible from the target system, for
 example:
@@ -54,6 +62,14 @@ cd experiments/ship_wake
 python dissmann.py
 ```
 
+Generate the AIC distribution figure from the repository root:
+
+```bash
+python experiments/ship_wake/plot_large_aic_cdf.py
+```
+
+The script writes PDF and PNG versions to `experiments/ship_wake/results/`.
+
 ## Archived data
 
 The Git repository deliberately excludes Snakemake state and exhaustive result
@@ -64,7 +80,7 @@ manifests. The deposited raw chunk is evidence of the output format and scale;
 it is not the complete 660,602,880-row result table.
 
 Original workflows, derived results, logs, and documentation are released
-under MIT. The provenance and reuse terms of the source ship-wake CSV must be
-confirmed separately before publishing the Zenodo record.
+under MIT. The source observations and row-level pseudo-observations are not
+included in the record.
 
 Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.

@@ -3,17 +3,17 @@ message: >-
   If you use these experimental data, please cite the Zenodo record and the
   accompanying Trasgu SoftwareX article.
 type: dataset
-title: Experimental data for the Trasgu SoftwareX article
+title: Experimental data and derived results for the Trasgu SoftwareX article
 version: 1.0.0
 doi: 10.5281/zenodo.21807187
 license: MIT
 authors:
   - family-names: Fernández-Quiruelas
     given-names: Valvanuz
-  - family-names: "'t Hart"
-    given-names: Marcel
   - family-names: Mares-Nasarre
     given-names: Patricia
+  - family-names: "'t Hart"
+    given-names: Marcel
   - family-names: Morales-Nápoles
     given-names: Oswaldo
 repository-code: https://github.com/SantanderMetGroup/trasgu

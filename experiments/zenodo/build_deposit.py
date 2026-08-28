@@ -12,7 +12,6 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-
 VERSION = "v1"
 EXPECTED_SHIP_CHUNK_SHA256 = (
     "c6acbf1db281905e186701f64616c00aad1c6b00dfc44d18aa72e7d3d4703d60"
@@ -23,6 +22,10 @@ EXCLUDED_NAMES = {
     ".snakemake",
     "__pycache__",
     "fontlist-v3.11.0.json",
+}
+FORBIDDEN_SHIP_NAMES = {
+    "UI-1_ship_and_wake_data_for_TUDelft.csv",
+    "unity_inbound.txt",
 }
 
 
@@ -73,22 +76,33 @@ def verify_checksums(root: Path) -> None:
             raise RuntimeError(f"Checksum mismatch for {path}: {actual} != {expected}")
 
 
+def verify_ship_exclusions(root: Path) -> None:
+    included_names = {path.name for path in root.rglob("*") if path.is_file()}
+    forbidden = sorted(included_names & FORBIDDEN_SHIP_NAMES)
+    if forbidden:
+        raise RuntimeError(
+            "Ship-wake package contains excluded source data: " + ", ".join(forbidden)
+        )
+
+
 def make_archive(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("wb") as raw:
-        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed:
-            with tarfile.open(fileobj=compressed, mode="w") as archive:
-                for path in [source, *sorted(source.rglob("*"))]:
-                    relative = path.relative_to(source.parent)
-                    info = archive.gettarinfo(str(path), arcname=relative.as_posix())
-                    info.uid = info.gid = 0
-                    info.uname = info.gname = ""
-                    info.mtime = 0
-                    if path.is_file():
-                        with path.open("rb") as stream:
-                            archive.addfile(info, stream)
-                    else:
-                        archive.addfile(info)
+    with (
+        destination.open("wb") as raw,
+        gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed,
+        tarfile.open(fileobj=compressed, mode="w") as archive,
+    ):
+        for path in [source, *sorted(source.rglob("*"))]:
+            relative = path.relative_to(source.parent)
+            info = archive.gettarinfo(str(path), arcname=relative.as_posix())
+            info.uid = info.gid = 0
+            info.uname = info.gname = ""
+            info.mtime = 0
+            if path.is_file():
+                with path.open("rb") as stream:
+                    archive.addfile(info, stream)
+            else:
+                archive.addfile(info)
 
 
 def successful_log(logs: list[Path]) -> Path | None:
@@ -110,6 +124,58 @@ def successful_log(logs: list[Path]) -> Path | None:
     return max(successes, key=lambda path: int(path.stem)) if successes else None
 
 
+def validate_ship_source(repo: Path) -> None:
+    experiment = repo / "experiments" / "ship_wake"
+    common = repo / "experiments" / "zenodo"
+    required_files = (
+        experiment / "zenodo" / "DATASET_README.md",
+        experiment / "zenodo" / "RAW_CHUNK_README.md",
+        experiment / "zenodo" / "execution_environment.txt",
+        experiment / "zenodo" / "software_revision.txt",
+        experiment / "PrepareData.py",
+        experiment / "dissmann.py",
+        experiment / "plot_large_aic_cdf.py",
+        experiment / "processed_aic_cdf.npz",
+        experiment / "results" / "best_fits.txt",
+        experiment / "results" / "large_aic_cdf.pdf",
+        experiment / "results" / "large_aic_cdf.png",
+        experiment / ".trasgu_ship_wake" / "fit_chunk_0067_4000000.csv",
+        repo / "styles" / "trasgu.mplstyle",
+        common / "LICENSE",
+        common / "RIGHTS.md",
+        common / "THIRD_PARTY_NOTICES.md",
+    )
+    required_directories = (
+        experiment / "execution_snapshot",
+        experiment / ".snakemake" / "slurm_logs" / "rule_fit_chunk",
+        experiment / ".snakemake" / "log",
+    )
+    missing = [path for path in required_files if not path.is_file()]
+    missing.extend(path for path in required_directories if not path.is_dir())
+    if missing:
+        details = "\n  ".join(str(path) for path in missing)
+        raise FileNotFoundError(f"Ship-wake package source is incomplete:\n  {details}")
+
+
+def validate_clayton_source(source: Path) -> None:
+    required = (
+        "README.md",
+        "metadata",
+        "workflow_snapshots",
+        "runs_by_sample_size",
+        "repeated_300/summary",
+        "sample_size_scaling/summary",
+        "sample_size_scaling/timing_logs",
+        "representative_full_fits/iteration_99_300",
+        "representative_full_fits/iteration_1_3000",
+    )
+    missing = [name for name in required if not (source / name).exists()]
+    if missing:
+        raise RuntimeError(
+            "Clayton package source is incomplete; missing: " + ", ".join(missing)
+        )
+
+
 def build_ship_wake(repo: Path, staging: Path) -> Path:
     experiment = repo / "experiments" / "ship_wake"
     common = repo / "experiments" / "zenodo"
@@ -117,14 +183,34 @@ def build_ship_wake(repo: Path, staging: Path) -> Path:
 
     copy_file(experiment / "zenodo" / "DATASET_README.md", package / "README.md")
     copy_file(common / "LICENSE", package / "LICENSE")
+    copy_file(common / "RIGHTS.md", package / "RIGHTS.md")
     copy_file(common / "THIRD_PARTY_NOTICES.md", package / "THIRD_PARTY_NOTICES.md")
-    for name in ("UI-1_ship_and_wake_data_for_TUDelft.csv", "PrepareData.py", "dissmann.py"):
-        copy_file(experiment / name, package / "input" / name)
+    for name in ("PrepareData.py", "dissmann.py"):
+        copy_file(experiment / name, package / "code" / name)
     copy_tree(experiment / "execution_snapshot", package / "workflow_snapshot")
     copy_file(
         experiment / "results" / "best_fits.txt",
         package / "results" / "best_fits.txt",
     )
+    copy_file(
+        experiment / "plot_large_aic_cdf.py",
+        package / "analysis" / "plot_large_aic_cdf.py",
+    )
+    copy_file(
+        experiment / "processed_aic_cdf.npz",
+        package / "analysis" / "processed_aic_cdf.npz",
+    )
+    copy_file(
+        repo / "styles" / "trasgu.mplstyle",
+        package / "analysis" / "styles" / "trasgu.mplstyle",
+    )
+    for suffix in ("pdf", "png"):
+        copy_file(
+            experiment / "results" / f"large_aic_cdf.{suffix}",
+            package / "analysis" / "results" / f"large_aic_cdf.{suffix}",
+        )
+    for name in ("execution_environment.txt", "software_revision.txt"):
+        copy_file(experiment / "zenodo" / name, package / "metadata" / name)
 
     raw_chunk = experiment / ".trasgu_ship_wake" / "fit_chunk_0067_4000000.csv"
     if sha256(raw_chunk) != EXPECTED_SHIP_CHUNK_SHA256:
@@ -133,9 +219,12 @@ def build_ship_wake(repo: Path, staging: Path) -> Path:
         raise RuntimeError(f"Representative chunk does not have 4,000,000 rows: {raw_chunk}")
     compressed_chunk = package / "raw_results" / f"{raw_chunk.name}.gz"
     compressed_chunk.parent.mkdir(parents=True, exist_ok=True)
-    with raw_chunk.open("rb") as source, compressed_chunk.open("wb") as target:
-        with gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0) as output:
-            shutil.copyfileobj(source, output)
+    with (
+        raw_chunk.open("rb") as source,
+        compressed_chunk.open("wb") as target,
+        gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0) as output,
+    ):
+        shutil.copyfileobj(source, output)
     copy_file(
         experiment / "zenodo" / "RAW_CHUNK_README.md",
         package / "raw_results" / "README.md",
@@ -180,26 +269,14 @@ def build_ship_wake(repo: Path, staging: Path) -> Path:
         if log != final_log:
             copy_file(log, package / "logs" / "workflow_attempts" / log.name)
 
+    verify_ship_exclusions(package)
     write_checksums(package)
     verify_checksums(package)
     return package
 
 
 def build_clayton(source: Path, staging: Path) -> Path:
-    required = (
-        "README.md",
-        "metadata",
-        "workflow_snapshots",
-        "runs_by_sample_size",
-        "repeated_300/summary",
-        "sample_size_scaling/summary",
-        "sample_size_scaling/timing_logs",
-        "representative_full_fits/iteration_99_300",
-        "representative_full_fits/iteration_1_3000",
-    )
-    missing = [name for name in required if not (source / name).exists()]
-    if missing:
-        raise RuntimeError("Clayton package source is incomplete; missing: " + ", ".join(missing))
+    validate_clayton_source(source)
     package = staging / f"clayton_7d-softwarex-{VERSION}"
     copy_tree(source, package)
     write_checksums(package)
@@ -240,13 +317,22 @@ def main() -> None:
     args = parser.parse_args()
 
     repo = Path(__file__).resolve().parents[2]
+    validate_ship_source(repo)
+    if args.clayton_source:
+        validate_clayton_source(args.clayton_source.resolve())
     output = args.output_dir.resolve()
     if output.exists() and any(output.iterdir()):
         raise RuntimeError(f"Output directory must be empty: {output}")
     output.mkdir(parents=True, exist_ok=True)
 
     common = repo / "experiments" / "zenodo"
-    for name in ("README.md", "CITATION.cff", "LICENSE", "THIRD_PARTY_NOTICES.md"):
+    for name in (
+        "README.md",
+        "CITATION.cff",
+        "LICENSE",
+        "RIGHTS.md",
+        "THIRD_PARTY_NOTICES.md",
+    ):
         copy_file(common / name, output / name)
 
     with tempfile.TemporaryDirectory(prefix="trasgu-zenodo-") as temporary:

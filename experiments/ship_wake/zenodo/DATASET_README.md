@@ -1,13 +1,14 @@
 # Ship-wake experiment data
 
 This data package accompanies the Trasgu SoftwareX article. It preserves the
-inputs, workflow snapshot, selected results, execution evidence, and one
-representative raw output chunk from the exhaustive fit of all 660,602,880
-eight-dimensional Chimera matrices.
+analysis code, workflow snapshot, selected derived results, execution evidence,
+and one representative raw output chunk from the exhaustive fit of all
+660,602,880 eight-dimensional Chimera matrices.
 
 ## Contents
 
-- `input`: source observations and the scripts used to prepare and fit them.
+- `code`: scripts used to prepare the observations and run the comparison.
+- `analysis`: processed AIC distribution, plotting script, style, and figures.
 - `workflow_snapshot`: exact workflow and cluster configuration used.
 - `results/best_fits.txt`: compact summary derived from the complete fit.
 - `raw_results`: gzip-compressed chunk 0067 (4,000,000 rows).
@@ -16,6 +17,8 @@ eight-dimensional Chimera matrices.
 - `logs/workflow_attempts`: top-level Snakemake execution attempts.
 - `logs/final_combination.log`: successful final combination run.
 - `metadata/chunk_manifest.csv`: mapping from chunks to SLURM job identifiers.
+- `metadata/execution_environment.txt`: execution-system summary.
+- `metadata/software_revision.txt`: software-release and provenance details.
 - `metadata/SHA256SUMS`: checksums for all files in this package.
 
 The representative raw CSV has no header. Its columns are `vine_id`,
@@ -38,6 +41,11 @@ shasum -a 256 -c metadata/SHA256SUMS
 - Chimera matrices dataset DOI: https://doi.org/10.5281/zenodo.21804549
 - Experimental dataset DOI: https://doi.org/10.5281/zenodo.21807187
 
-The source ship-wake CSV is included on the assumption that its redistribution
-terms permit publication. This permission must be confirmed before publishing
-the Zenodo record. See `THIRD_PARTY_NOTICES.md`.
+## Source-data availability
+
+The third-party source observations are not publicly available and are not
+included in this package. Row-level pseudo-observations derived from them are
+also excluded. Complete numerical reproduction therefore requires obtaining
+authorized access to the source observations independently. The public package
+supports inspection of the workflow, derived fit results, figures, and
+execution provenance.

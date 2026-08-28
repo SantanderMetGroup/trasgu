@@ -7,7 +7,8 @@ Clayton 7D archive.
 It contains:
 
 - the exact workflow and cluster-configuration snapshot;
-- the source observations and preparation script;
+- the preparation and comparison scripts, without the source observations;
+- the processed AIC distribution and publication figures;
 - the compact best-fit summary;
 - raw chunk `0067`, containing 4,000,000 rows for vine IDs 268,000,000 through
   271,999,999;
@@ -25,8 +26,10 @@ combined result before that large intermediate file was discarded.
 Snakemake metadata, scheduler state, source-cache duplicates, matplotlib font
 caches, and exploratory top-level logs are excluded.
 
-The original workflow, derived results, logs, manifests, and documentation are
-released under the MIT License. The license of the source ship-wake CSV must be
-confirmed separately; see `THIRD_PARTY_NOTICES.md` in the common deposit.
+The source observations are not publicly available. Neither those observations
+nor the row-level pseudo-observations derived from them are included. The
+original workflow, derived results, figures, logs, manifests, and documentation
+are released under the MIT License; see `RIGHTS.md` and
+`THIRD_PARTY_NOTICES.md` in the common deposit.
 
 Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.
