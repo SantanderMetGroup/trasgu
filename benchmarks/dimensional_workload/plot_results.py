@@ -44,7 +44,18 @@ def main() -> None:
     variables = [int(row["variables"]) for row in rows]
     times = [float(row["estimated_total_minutes"]) for row in rows]
     matrices = [int(row["matrices"]) for row in rows]
-    time_labels = [row["display_time"] for row in rows]
+    # CSV rows 2--6 (excluding the header) correspond to 4--8 variables.
+    time_formats = {
+        4: (1 / 60, ".2f", "s"),
+        5: (1 / 60, ".2f", "s"),
+        6: (1, "g", "min"),
+        7: (24 * 60, ".1f", "days"),
+        8: (365 * 24 * 60, ".1f", "years"),
+    }
+    time_labels = []
+    for dimension, minutes in zip(variables, times):
+        divisor, precision, unit = time_formats[dimension]
+        time_labels.append(f"{minutes / divisor:{precision}} {unit}")
 
     fig, time_axis = plt.subplots(figsize=(10, 5.5))
     matrix_axis = time_axis.twinx()
@@ -106,7 +117,6 @@ def main() -> None:
 
     handles = [time_bars, matrix_bars]
     time_axis.legend(handles, [item.get_label() for item in handles], loc="upper left")
-    time_axis.set_title("Vine fitting workload by dimensionality")
     fig.tight_layout()
 
     OUTPUT_STEM.parent.mkdir(parents=True, exist_ok=True)

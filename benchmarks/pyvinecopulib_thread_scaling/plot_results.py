@@ -42,7 +42,6 @@ def main() -> None:
     axis.set(
         xlabel="Allocated CPUs",
         ylabel="Measured speedup",
-        title="Thread scaling for one eight-dimensional vine fit",
         xlim=(0, 50),
         xticks=np.arange(0, 49, 8),
     )
