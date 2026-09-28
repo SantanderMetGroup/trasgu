@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot empirical AIC differences for the 100 repeated 300-observation fits."""
+"""Plot signed AIC differences for the 100 repeated 300-observation fits."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ STYLE_FILE = REPOSITORY_ROOT / "styles" / "trasgu.mplstyle"
 if not STYLE_FILE.exists():
     STYLE_FILE = EXPERIMENT_DIR / "styles" / "trasgu.mplstyle"
 INPUT_FILE = EXPERIMENT_DIR / "results" / "aic_comparison.csv"
-OUTPUT_FILE = EXPERIMENT_DIR / "figures" / "aic_differences.png"
+OUTPUT_FILE = EXPERIMENT_DIR / "figures" / "signed_aic_differences.png"
 
 
 def main() -> None:
@@ -29,13 +29,13 @@ def main() -> None:
     differences = {
         "Exhaustive search": np.array(
             [
-                abs(float(row["aic_vine"]) - float(row["aic_fixed_matrix_clayton"]))
+                float(row["aic_vine"]) - float(row["aic_fixed_matrix_clayton"])
                 for row in rows
             ]
         ),
         "Dissmann algorithm": np.array(
             [
-                abs(float(row["aic_dissmann"]) - float(row["aic_fixed_matrix_clayton"]))
+                float(row["aic_dissmann"]) - float(row["aic_fixed_matrix_clayton"])
                 for row in rows
             ]
         ),
@@ -57,7 +57,7 @@ def main() -> None:
 
     ax.axvline(0, color="0.45", linestyle="--", linewidth=1)
     ax.set(
-        xlabel="Absolute AIC difference from the fixed Clayton structure",
+        xlabel="AIC difference from the fixed Clayton structure",
         ylabel="Cumulative proportion of simulations",
     )
     ax.legend()

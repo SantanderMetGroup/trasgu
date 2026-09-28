@@ -5,10 +5,10 @@ examples distributed with Trasgu remain under `src/trasgu/examples`, while
 controlled performance measurements live under `benchmarks` and validation
 workflows under `validation`.
 
-- `clayton_7d`: repeated synthetic validation and sample-size scaling across
-  all seven-dimensional Chimera matrices. Complete generated data and selected
-  raw outputs are prepared for the accompanying Zenodo data deposit.
-- `ship_wake`: exhaustive fitting of eight variables selected from the
+- [Clayton 7D](clayton_7d/README.md): 100 synthetic datasets of 300 observations fitted across all
+  seven-dimensional Chimera matrices. The generated inputs and selected
+  outputs are distributed through Zenodo.
+- [Ship wake](ship_wake/README.md): exhaustive fitting of eight variables selected from the
   ship-and-wake dataset, together with a Dissmann comparison. A representative
   raw chunk and the curated execution logs are prepared for the same deposit.
 

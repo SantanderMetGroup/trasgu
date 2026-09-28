@@ -1,0 +1,27 @@
+Original repeated-300 execution
+===============================
+
+Cluster: Altamira, IFCA / University of Cantabria
+SLURM partition used: wncompute_meteo (confirmed by the experiment author)
+Compute-node CPU: not established by the retained main workflow logs
+100 datasets, 300 observations and 7 variables per dataset
+2,580,480 candidate matrices per dataset
+Chunk size: 260,000 (9 full chunks and a final chunk of 240,480)
+Workers/CPUs per fitting job: 16
+Total fitting jobs: 1,000
+
+The retained slurm_profile.yaml and the preparation helper both specify
+wncompute_meteo. Adapt the partition when repeating the campaign on another
+infrastructure.
+
+Environment printed in the main workflow logs:
+Linux 5.14.0-611.55.1.el9_7, x86_64; Python 3.12.13; Snakemake 9.23.1.
+The logs identify login2.ifca.es and an Intel Xeon Silver 4208 at 2.10 GHz.
+Those identify the submitting host, not the CPUs running the fitting jobs.
+Other package versions were not retained in these logs and are not inferred
+from today's development environment. See software_revision.txt for the
+limits of the recovered execution revision.
+
+The main workflow logs are retained for all 100 iterations. This revised
+package does not contain a complete set of per-chunk scheduler logs for the
+1,000 jobs; it cannot independently reconstruct all job durations or overlap.

@@ -26,17 +26,29 @@ included in GitHub or Zenodo.
 to reproduce the figure. The retained raw chunk is only a representative
 subset and cannot reconstruct this full distribution.
 
-The repository contains `workflow/`, `original_execution/`, `analysis/`,
-`results/` and `figures/`. The reviewed Zenodo package additionally contains
-selected logs and one representative raw chunk; see its
-[README](../zenodo/staging/ship_wake/README.md).
+This revised package is being reviewed and has not been published. The source
+record is https://doi.org/10.5281/zenodo.21807187; no new DOI is assigned.
+
+The package mirrors the GitHub experiment layout and adds:
+
+- `styles/`: the plotting style.
+- `raw_results/`: compressed chunk 0067, with 4,000,000 rows.
+- `logs/successful_chunks/`: one successful SLURM log for each of 166 chunks.
+- `logs/failed_chunk_attempts/` and `logs/workflow_attempts/`: retained attempts.
+- `logs/final_combination.log`: the final successful combination log.
+- `metadata/`: chunk/job identifiers and execution provenance.
+
+The raw chunk has no header; columns are `vine_id`, `n_parameters`, and `aic`.
+It covers IDs 268,000,000 through 271,999,999. The complete exhaustive table
+is not retained. Checksums are added in `metadata/SHA256SUMS` when packaging;
+verify an extracted archive using `shasum -a 256 -c metadata/SHA256SUMS`.
 
 ## Reproduce the figure
 
-Install Trasgu with its benchmark dependencies. Run from the repository root:
+Install Trasgu with its benchmark dependencies. Run from the package root:
 
 ```bash
-python experiments/ship_wake/analysis/plot_large_aic_cdf.py
+python analysis/plot_large_aic_cdf.py
 ```
 
 The script reads `results/processed_aic_cdf.npz`, applies `trasgu.mplstyle`,
@@ -47,10 +59,10 @@ No source observations are needed for this step.
 
 Obtain the source CSV from the authors cited above and install Trasgu with
 its benchmark and SLURM dependencies (`python -m pip install -e '.[benchmarks,slurm]'`
-from a repository checkout). From the repository root:
+from a repository checkout). From the package root:
 
 ```bash
-python experiments/ship_wake/workflow/prepare_run.py /scratch/ship-wake-repeat \
+python workflow/prepare_run.py /scratch/ship-wake-repeat \
   --data /path/to/UI-1_ship_and_wake_data_for_TUDelft.csv
 cd /scratch/ship-wake-repeat
 trasgu_run --profile slurm_profile.yaml --dry-run

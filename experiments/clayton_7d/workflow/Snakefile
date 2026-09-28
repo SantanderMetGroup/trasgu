@@ -1,0 +1,65 @@
+# Prepared-run workflow. Observations are external inputs and are never regenerated here.
+from pathlib import Path
+
+BASE = Path(workflow.basedir)
+configfile: str(BASE / "campaign.yaml")
+ITERATIONS = range(1, int(config["iterations"]) + 1)
+RUNS = BASE / "simulations"
+
+rule all:
+    input:
+        str(BASE / "aic_comparison.csv")
+
+rule fit:
+    input:
+        data=str(RUNS / "iteration_{i}" / "vinecop_samples.txt"),
+        config=str(RUNS / "iteration_{i}" / "trasgu.yaml")
+    output:
+        str(RUNS / "iteration_{i}" / "fit_iteration_{i}.csv")
+    log:
+        str(RUNS / "iteration_{i}" / "trasgu_run.log")
+    params:
+        run=lambda w: str(RUNS / f"iteration_{w.i}"),
+        profile=str(BASE / "slurm_profile.yaml")
+    shell:
+        "cd {params.run:q} && trasgu_run --profile {params.profile:q} > {log:q} 2>&1"
+
+rule references:
+    input:
+        data=str(RUNS / "iteration_{i}" / "vinecop_samples.txt"),
+        config=str(RUNS / "iteration_{i}" / "trasgu.yaml")
+    output:
+        str(RUNS / "iteration_{i}" / "references.yaml")
+    params:
+        script=str(BASE / "fit_references.py"),
+        run=lambda w: str(RUNS / f"iteration_{w.i}")
+    shell:
+        "python {params.script:q} {params.run:q}"
+
+rule select:
+    input:
+        fit=str(RUNS / "iteration_{i}" / "fit_iteration_{i}.csv"),
+        data=str(RUNS / "iteration_{i}" / "vinecop_samples.txt"),
+        config=str(RUNS / "iteration_{i}" / "trasgu.yaml")
+    output:
+        summary=str(RUNS / "iteration_{i}" / "best_vine_fit.txt"),
+        detailed=str(RUNS / "iteration_{i}" / "best_fit_detailed.txt")
+    params:
+        script=str(BASE / "select_best_vine.py")
+    shell:
+        "python {params.script:q} --fit {input.fit:q} --data {input.data:q} "
+        "--config {input.config:q} --output {output.summary:q} --detailed-output {output.detailed:q}"
+
+rule summarize:
+    input:
+        expand(str(RUNS / "iteration_{i}" / "best_vine_fit.txt"), i=ITERATIONS),
+        expand(str(RUNS / "iteration_{i}" / "best_fit_detailed.txt"), i=ITERATIONS),
+        expand(str(RUNS / "iteration_{i}" / "references.yaml"), i=ITERATIONS)
+    output:
+        str(BASE / "aic_comparison.csv")
+    params:
+        script=str(BASE / "build_aic_summaries.py"),
+        runs=str(RUNS),
+        iterations=int(config["iterations"])
+    shell:
+        "python {params.script:q} {params.runs:q} --iterations {params.iterations} --output {output:q}"

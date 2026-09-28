@@ -148,8 +148,8 @@ Article-scale case studies live under `experiments/`, separately from the
 small examples packaged with Trasgu:
 
 - `clayton_7d` contains the code snapshots and compact results for repeated
-  seven-dimensional synthetic fits and sample-size scaling. Complete outputs
-  are prepared for the accompanying Zenodo data deposit.
+  seven-dimensional synthetic fits with 300 observations. The generated inputs
+  and selected outputs are distributed through Zenodo.
 - `ship_wake` contains the eight-variable ship-wake case study.
 
 See [`experiments/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/experiments/README.md) for the distinction

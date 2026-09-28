@@ -1,0 +1,17 @@
+README.md
+LICENSE
+MANIFEST.txt
+metadata/execution_commands.txt
+metadata/execution_environment.txt
+metadata/software_revision.txt
+metadata/package_provenance.txt
+metadata/SHA256SUMS
+original_execution/
+workflow/
+simulations/iteration_1/ ... iteration_100/
+results/aic_comparison.csv
+figures/aic_differences.{png,pdf,svg}
+figures/signed_aic_differences.{png,pdf,svg}
+simulations/iteration_99/fit_iteration_99.csv
+analysis/
+styles/trasgu.mplstyle
