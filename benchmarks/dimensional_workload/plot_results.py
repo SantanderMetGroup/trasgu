@@ -48,7 +48,7 @@ def main() -> None:
     time_formats = {
         4: (1 / 60, ".2f", "s"),
         5: (1 / 60, ".2f", "s"),
-        6: (1, "g", "min"),
+        6: (1, ".0f", "min"),
         7: (24 * 60, ".1f", "days"),
         8: (365 * 24 * 60, ".1f", "years"),
     }
@@ -70,7 +70,7 @@ def main() -> None:
         times,
         width=width,
         color=BLUE,
-        label="Estimated fitting time",
+        label="Fitting time",
     )
     matrix_bars = matrix_axis.bar(
         matrix_positions,
@@ -82,7 +82,7 @@ def main() -> None:
 
     time_axis.set(
         xlabel="Number of variables",
-        ylabel="Estimated fitting time (minutes)",
+        ylabel="Sequential fitting time (minutes)",
         xticks=variables,
         yscale="log",
     )

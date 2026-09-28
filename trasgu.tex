@@ -1,0 +1,902 @@
+%% 
+%% Copyright 2007, 2008, 2009 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+
+\documentclass[preprint,12pt, a4paper]{elsarticle}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+\usepackage{amsmath}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{xy}
+\input xy
+\xyoption{all}
+\usepackage{float}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%\usepackage{lineno}
+
+\journal{SoftwareX}
+
+\begin{document}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+
+\begin{frontmatter}
+ 
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+
+%\title{Title (Name of your software: Then a short title)}
+
+\title{Trasgu\footnote{The  trasgu is a mythological creature present in Galician, Asturian and Cantabrian traditional culture.  When treated well, the trasgu does many small tasks quickly around the house during the night. Folklore says that when confronted with impossible tasks, like fitting 663,206,904 vine copulas to data, he will still try to solve them.}: A wrapper for simplified vine copula fitting with Chimera across local and high-performance computing platforms}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \address[label1]{}
+%% \address[label2]{}
+
+\author[label1]{Valvanuz Fernández-Quiruelas}
+\author[label2]{Patricia Mares-Nasarre}
+\author[label3]{Marcel 't Hart}
+\author[label2]{Oswaldo Morales-Nápoles}
+\address[label1]{Departamento de Matemática Aplicada y Ciencias de la Computación, Universidad de Cantabria, Santander, Spain}
+\address[label2]{Department of Hydraulic Engineering, Faculty of Civil Engineering and Geosciences, Delft University of Technology, Stevinweg 1, 2628 CN Delft, The Netherlands}
+\address[label3]{Haskoning Nederland, PO Box 1132 Amersfoort, the Netherlands}
+
+\begin{abstract}
+Vine copulas represent multivariate probability distributions through
+sequences of trees whose edges are modelled with bivariate copulas. Chimera is
+a catalogue developed at TU Delft that contains all possible regular-vine tree
+sequences with four to eight nodes, represented by 663,206,904 matrices.
+Exhaustively fitting these matrices provides a reference for evaluating structure-selection algorithms based on heuristics, but requires managing
+millions of independent fits. Trasgu is an open-source Python package developed
+to make such studies reproducible on personal computers and high-performance
+computing systems. We illustrate the use of Trasgu
+through a simulation study and a real-world application with field data of ship-induced waves. 
+\end{abstract}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+Vine copulas \sep Regular vines \sep High-performance computing \sep
+Scientific workflows \sep Chimera
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
+
+%\linenumbers
+\section*{Metadata}
+\label{requiredMetadata}
+
+
+The ancillary data in Table~\ref{codeMetadata} describe the software release
+used in this article.
+
+\begin{table}[!h]
+\begin{tabular}{|l|p{5.85cm}|p{5.85cm}|}
+\hline
+\textbf{Nr.} & \textbf{Code metadata description} & \textbf{Value} \\
+\hline
+C1 & Current code version & v0.1.1 \\
+\hline
+C2 & Permanent GitHub link to code/repository used for this code version & \url{https://github.com/SantanderMetGroup/trasgu/tree/v0.1.1} \\
+\hline
+C3 & Legal Code License & MIT License. \\
+\hline
+C4 & Code versioning system used & Git. \\
+\hline
+C5 & Software code languages, tools, and services used & Python; uv; Zarr; pyvinecopulib; Snakemake; SLURM; GitHub Actions; PyPI. \\
+\hline
+C6 & Compilation requirements, operating environments \& dependencies & No compilation required; Linux, macOS, or Windows; Python 3.11--3.13; NumPy, PyYAML, Zarr, fsspec, pyvinecopulib, and Snakemake; optional SLURM executor plugin. \\
+\hline
+C7 & If available Link to developer documentation/manual & \url{https://santandermetgroup.github.io/trasgu/} \\
+\hline
+C8 & Support email for questions & valvanuz.fernandez@unican.es \\
+\hline
+\end{tabular}
+\caption{Code metadata}
+\label{codeMetadata} 
+\end{table}
+
+
+\section{Motivation and significance}
+
+% DO_NOT_TOUCH
+Simplified vine copulas are flexible models for representing multivariate dependence through bivariate building blocks \citep{Joe1996, BedfordCooke2001, BedfordCooke2002, Aas2009, Joe2014, Czado2019}. In applications, however, the modeller has to choose a regular vine structure, the bivariate copula families and their parameters. In principle, one may fit all possible regular vines and select the best model according to AIC, another likelihood-based criterion, or formal hypothesis tests. In practice this is rarely done, because the number of regular vines grows extremely fast with the number of variables.
+
+Most available software for vine copulas, including implementations in R and Python, relies on sequential or greedy algorithms to make the fitting problem computationally feasible \citep{Dissmann2013, Schepsmeier2018, Nagler2023}. This is often a necessary modelling choice, but it is also a \textit{simplifying decision} in the sense discussed in \cite{CookeBedford2025}. The modeller does
+not only adopt the usual simplifying assumption for conditional copulas, but also accepts a reduced search over the space of regular vines. The consequences of this decision can only be studied systematically when sufficiently large sets of regular vines are available and can be fitted to data.
+
+Chimera was developed for this purpose. It contains all regular vine matrices on up to eight nodes: 24 on four nodes, 480 on five nodes, 23,040 on six nodes, 2,580,480 on seven nodes and 660,602,880 on eight nodes \cite{MoralesNapoles2023Chimera}. Stored as unsigned 8-bit integers, each $8\times8$ matrix contains 64 bytes of raw array data, and the complete eight-node collection represents 42.28 GB uncompressed (3.77 GB compressed). 
+
+Recent work using Chimera has shown that complete brute-force fitting is possible with the aid of high-performance computing, and that such experiments can be used to test commonly used algorithms such as Di{\ss}mann's algorithm \citep{MoralesNapoles2026ESREL, MoralesNapoles2026AIC}. \citep{MoralesNapoles2026ESREL} describes the use of Chimera and HPC for systematic experiments with AIC and Vuong's test \cite{Vuong1989}, and discusses future research directions in risk and reliability analysis. The AIC simulation study shows the scale that can be reached: more than
+1.4 billion vine copula models were fitted to synthetic and real-life data sets on three to eight variables. 
+% DO_NOT_TOUCH
+
+In Python, an exhaustive search on Chimera can be implemented by iterating over
+the matrices and passing each structure to \texttt{pyvinecopulib}
+\citep{Nagler2023}, which estimates its pair-copula families, parameters and AIC.
+
+Figure~\ref{fig:fit_times_by_dimension} compares the size of the Chimera
+collections with the estimated sequential fitting time for 300 observations,
+using one core of an Intel Xeon Silver 4208 processor and
+\texttt{pyvinecopulib} 0.7.6. Exhaustive fitting takes less than one second for
+four variables, 27 seconds for five and 31 minutes for six, but increases to
+3.4 days for seven and 3.4 years for eight. Consequently, a direct loop is
+practical up to five or six variables, whereas higher dimensions require a different
+approach.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/dimensional_workload.pdf}
+	\caption{Estimated sequential fitting time (blue) and number of Chimera
+    matrices (orange) for 300 observations, one CPU core and the one-parameter
+    families available in \texttt{pyvinecopulib}.}
+	\label{fig:fit_times_by_dimension}
+\end{figure}
+
+Increasing the number of threads used by \texttt{pyvinecopulib} reduces the fitting time for an individual structure 
+by distributing the computation across multiple CPU cores. However, the speedup quickly saturates: for a fixed eight-dimensional structure, it reached approximately 4.5 with 16 CPUs and showed little further improvement between 16 and 24 CPUs (Figure~\ref{fig:pyvinecopulib_thread_scaling}).
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.64\linewidth]{figures/thread_scaling.pdf}
+	\caption{Measured speedup for one fixed eight-dimensional vine fit with
+    300 observations as the number of \texttt{pyvinecopulib} threads increases.}
+	\label{fig:pyvinecopulib_thread_scaling}
+\end{figure}
+
+The scale of the eight-dimensional collection also creates a data-access
+challenge. Although its compressed Zarr representation occupies only 3.77 GB
+on disk, materializing the full array requires 42.28 GB of memory, excluding
+additional software overhead, and therefore exceeds the memory available on
+many personal computers. Practical use requires indexed, chunk-wise access so
+that only the matrix ranges needed for a given task are retrieved. Trasgu
+provides this access transparently from either a remote Zarr store or a local
+copy, without requiring users to load the complete collection into memory.
+
+Because candidate vine matrices can be fitted independently, exhaustive structure search can naturally be parallelized: matrices can be distributed across the CPU cores of a local machine or across multiple jobs and compute nodes on a cluster. Trasgu exploits this independence by partitioning the full matrix space into chunks that can be processed concurrently.
+
+Trasgu provides a reproducible and scalable workflow for exhaustive vine-matrix fitting, enabling systematic comparisons between sequential structure-selection algorithms and complete searches, as well as large-scale simulation studies. It does not introduce a new fitting or structure-selection algorithm; rather, its contribution lies in making computationally demanding exhaustive analyses practical, reproducible, and portable across local and cluster environments.
+
+
+% \textit{In this section, we want you to introduce the scientific background and the motivation for developing the software.}
+
+
+
+% \begin{itemize}
+%     \item \textit{Explain why the software is important and describe the exact (scientific) problem(s) it solves.}
+%     \item \textit{Indicate in what way the software has contributed (or will contribute in the future) to the process of scientific discovery; if available, please cite a research paper using the software.}
+%     \item \textit{Provide a description of the experimental setting. (How does the user use the software?)}
+%     \item \textit{Introduce related work in literature (cite or list algorithms used, other software etc.).}
+% \end{itemize}
+
+% Explain why large-scale vine copula structure fitting is scientifically relevant and computationally difficult.
+% Position Trasgu as an execution layer that makes exhaustive or broad comparison of precomputed Chimera vine structures practical and reproducible.
+
+\section{Software description}
+
+Trasgu is a Python package for fitting the complete collection of regular-vine structures in Chimera corresponding to the dimensionality of a multivariate pseudo-observation dataset (input data). A run is defined by a \texttt{trasgu.yaml} configuration file, in which the user specifies the input data, fitting controls and computational resources. The resulting CSV file contains one row for each fitted Chimera regular-vine structure, reporting its matrix identifier, number of fitted parameters and AIC. These results allow the candidate structures to be compared and the structure with the lowest AIC to be identified.
+
+
+\subsection{Software architecture}
+
+Figure~\ref{fig:trasgu_architecture} summarizes the architecture. The user
+provides a multivariate pseudo-observation dataset (input data) and the
+\texttt{trasgu.yaml} configuration file. The input data can be stored as whitespace-delimited
+text, CSV, TSV or a NumPy array; a subset of columns can be selected in the
+configuration. 
+Trasgu validates the data, infers the number of variables from the input dataset (Trasgu supports four to eight variables similarly to Chimera) and selects the corresponding Chimera collection. Chimera matrices are accessed on demand via HTTP from a server at the University of Cantabria, with no prior data download required. A local copy or an alternative remote URL can be specified through the \texttt{chimera\_url} directive in \texttt{trasgu.yaml}.  
+
+Once Trasgu has determined the number of variables and read the configured \texttt{chunk\_size}, it partitions the corresponding Chimera collection into deterministic chunks, each processed as a separate computational task or job. For example, with seven variables and a chunk size of 20,000, the 2,580,480 structures are divided into 130 chunks: 129 contain 20,000 structures and the final chunk contains 480.
+
+Each chunk runs as a separate task and fits its assigned structures. The user
+can specify the number of worker processes used to parallelize these fits
+through \texttt{max\_workers} in \texttt{trasgu.yaml}. Trasgu uses Python's
+multiprocessing module to distribute the matrices within each chunk among the
+workers. Their results are collected and aggregated once all workers have
+completed their fits.
+
+Each regular-vine structure is fitted independently using
+\texttt{pyvinecopulib}, which selects the pair-copula families and estimates
+their parameters for the specified structure. By default, Trasgu uses the
+one-parameter families and AIC-based family selection. Non-default fitting controls can be provided as
+a serialized \texttt{FitControlsVinecop} object in \texttt{trasgu.yaml}.
+
+This first level of parallelization may be sufficient for users who want to exploit
+the cores available on a personal computer or a cloud virtual machine, provided
+that individual chunks have manageable execution times. If a chunk takes
+several days to complete, an unexpected shutdown or restart would interrupt the
+task and require the entire chunk to be fitted again.
+
+Large campaigns therefore require an orchestration layer that manages the
+complete set of chunks, submits new tasks as computational resources become
+available and keeps track of their progress. This is particularly important in
+HPC environments, where many chunks may be distributed across multiple compute
+nodes and remain queued until the requested resources are available. The
+orchestrator must identify completed and pending chunks, preserve valid results
+after an interruption and relaunch failed or incomplete tasks.
+
+Rather than implementing a dedicated workflow manager, Trasgu delegates these
+responsibilities to Snakemake \cite{KosterRahmann2012}. Snakemake orchestrates
+the chunk jobs, supports progress monitoring, permits dry runs and allows
+interrupted workflows to resume without repeating completed work. Failed jobs
+can also be relaunched automatically when retries are configured.
+
+A further advantage of Snakemake is the separation of the scientific
+configuration from the computational infrastructure. Input data, fitting
+controls and chunk definitions remain unchanged, while infrastructure-specific
+settings---such as the execution backend, queue, concurrency limits, memory and
+runtime---are defined through Snakemake profiles. Users can therefore adapt the
+same workflow to a personal computer, cloud virtual machine or HPC system
+without changing the scientific specification of the analysis. This separation
+improves portability, facilitates reproducibility and allows different users to
+run the same analysis using the resources available at their institutions.
+
+Supporting this workflow required a different representation of the Chimera collections. The original 4TU.ResearchData distribution stores the matrices in large compressed Python pickle files \cite{Hart2023ChimeraDataset}. This organization makes fine-grained access difficult and can incur substantial memory use when several fitting tasks read matrices concurrently. We therefore converted the collections to chunked Zarr arrays \cite{Miles2020Zarr}. This representation allows Trasgu to retrieve only the contiguous matrix ranges required by each task, directly from a remote store or from a local copy, without loading the complete collection or unrelated matrices into memory.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/trasgu_architecture.png}
+	\caption{Trasgu architecture. Input pseudo-observations and YAML
+    configuration define a fitting campaign. Trasgu partitions the Chimera
+    matrix collection into independent chunks. Snakemake tracks their state
+    and executes missing targets either locally or on an HPC cluster using the
+    selected profile, before the chunk-level results are combined.}
+	\label{fig:trasgu_architecture}
+\end{figure}
+
+\subsection{Software functionalities}
+
+Each fitting campaign is organized in a self-contained directory and configured
+through \texttt{trasgu.yaml}. The user specifies the input data and may adjust
+the chunk size, number of worker processes and fitting controls. A minimal
+configuration is:
+
+\begin{verbatim}
+data_file: input6_300_clayton_high.txt
+chunk_size: 1000
+max_workers: 4
+\end{verbatim}
+
+Before execution, \texttt{trasgu\_count\_chunks} reports the number of tasks.
+Users can then measure the execution time of one chunk with
+\texttt{trasgu\_time\_fit} and preview the planned jobs with
+\texttt{trasgu\_run --dry-run}. This helps them select a suitable chunk size
+and worker count before committing computational resources.
+
+Campaigns are started with \texttt{trasgu\_run}, either locally or through the
+selected Snakemake profile for distributed execution.
+\texttt{trasgu\_monitor} reports completed and pending chunks and their
+completion percentage. Relaunching an interrupted campaign schedules only
+missing or outdated results, preserving valid chunk outputs.
+
+Once the campaign is complete, \texttt{trasgu\_combine} aggregates the chunk
+outputs into a CSV table containing the Chimera matrix identifier, number of
+fitted parameters and AIC. \texttt{trasgu\_best\_fits} identifies and exports
+the models with the lowest AIC. Additional commands support fitting an individual chunk or matrix, locating Chimera matrices, downloading the Zarr collections for offline use and copying packaged examples. A complete summary of the available command-line tools is provided in \ref{app:cli}; detailed options and usage examples are available in the online documentation.
+
+
+\section{Illustrative examples}
+
+All experiments reported in this section were executed on Altamira, the
+high-performance computing infrastructure of the University of Cantabria,
+operated at IFCA-CSIC as part of the Spanish Supercomputing Network. Trasgu
+submitted and monitored the computational jobs through Altamira's SLURM
+queueing system \citep{IFCAAltamira}.
+
+Two experiments illustrate the complete workflow, from input preparation and
+configuration to distributed fitting and result aggregation. The first uses
+synthetic data generated from a known seven-dimensional vine, allowing the exhaustive
+search to be evaluated under controlled conditions. The second applies the
+same workflow to an eight-dimensional ship-wave data set and demonstrates the
+scale that can be addressed on an HPC system. The configurations, workflow
+snapshots and compact results for both experiments are distributed with the
+software; the source ship-wake CSV is not
+redistributed, while the accompanying data record contains the larger execution
+artifacts (\url{https://doi.org/10.5281/zenodo.21807187}).
+
+\subsection{Seven-dimensional synthetic experiment}
+
+Synthetic data were generated using the regular-vine structure (see Figure \ref{fig:trees}) corresponding to Chimera matrix 252000, $M_{\mathrm{gen}}$, which is one of the 2,580,480 seven-dimensional Chimera matrices:
+
+\[
+M_{\mathrm{gen}}=
+\begin{pmatrix}
+5 & 6 & 3 & 3 & 6 & 5 & 5 \\
+6 & 5 & 6 & 6 & 5 & 6 & 0 \\
+1 & 3 & 4 & 5 & 3 & 0 & 0 \\
+3 & 4 & 5 & 4 & 0 & 0 & 0 \\
+4 & 2 & 2 & 0 & 0 & 0 & 0 \\
+2 & 1 & 0 & 0 & 0 & 0 & 0 \\
+7 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}.
+\]
+
+\begin{figure}[H]
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 1:}} &
+*++[o][F]{4} \ar@/^2pc/@{-}[rrr]|{\txt{{\small $4,3$}}}="a"
+& *++[o][F]{2}\ar@{-}[rr]|{\txt{{\small $2,3$}}}="b"&
+&*++[o][F]{3}\ar@{-}[rr]|{\txt{{\small $3,6$}}}="c"&
+&*++[o][F]{6}\ar@{-}[rr]|{\txt{{\small $6,5$}}}="d"
+\ar@/^2pc/@{-}[rrrrr]|{\txt{{\small $6,1$}}}="f"&
+& *++[o][F]{5}\ar@{-}[rr]|{\txt{{\small $5,7$}}}="e" &
+&*++[o][F]{7}
+&*++[o][F]{1}
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+
+\vspace{-7.00mm}
+
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 2:}} &
+*++[F]{\txt{\small $4,3$}}="a" \ar@{-}[rr]|{\txt{{\small $4,6|3$}}}="ab"&
+&*++[F]{\txt{\small $3,6$}}="c"\ar@{-}[rr]|{\txt{{\small $2,6|3$}}}="ac"
+\ar@/^2pc/@{-}[rrrr]|{\txt{{\small $3,5|6$}}}="ad"&
+&*++[F]{\txt{\small $2,3$}}="b"&
+&*++[F]{\txt{\small $6,5$}}="d"\ar@{-}[rr]|{\txt{{\small $6,7|5$}}}="ae"\ar@/^2pc/@{-}[rrrr]|{\txt{{\small $1,5|6$}}}="af"&
+&*++[F]{\txt{\small $5,7$}}="e"&
+&*++[F]{\txt{\small $6,1$}}="f"
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+
+\vspace{-4.00mm}
+
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 3:}} &
+*++[F]{\txt{\small $4,6|3$}}="a" \ar@{-}[rrr]|{\txt{{\small $2,4|3,6$}}}="ac" \ar@/^2pc/@{-}[rrrrr]|{\txt{{\small $4,5|3,6$}}}="af"&&
+&*++[F]{\txt{\small $2,6|3$}}="c"&
+&*++[F]{\txt{\small $3,5|6$}}="b" \ar@/^2pc/@{-}[rrrrr]|{\txt{{\small $1,3|5,6$}}}="ad"&
+&*++[F]{\txt{\small $6,7|5$}}="d" \ar@{-}[rrr]|{\txt{{\small $1,7|5,6$}}}="ab"&&
+&*++[F]{\txt{\small $1,5|6$}}="e"
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+
+\vspace{-7.00mm}
+
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 4:}} &
+*++[F]{\txt{\small $4,5|3,6$}}="a" \ar@/^2pc/@{-}[rrrrrr]|{\txt{{\small $1,4|3,5,6$}}}="ad" \ar@{-}[rrrr]|{\txt{{\small $2,5|3,4,6$}}}="ab"&&&
+&*++[F]{\txt{\small $2,4|3,6$}}="c"&
+&*++[F]{\txt{\small $1,3|5,6$}}="b" \ar@{-}[rrrr]|{\txt{{\small $3,7|1,5,6$}}}="ab"&&&
+&*++[F]{\txt{\small $1,7|5,6$}}="d" 
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+
+
+\vspace{-7.00mm}
+
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 5:}} &
+*++[F]{\txt{\small $2,5|3,4,6$}}="a" \ar@{-}[rrrr]|{\txt{{\small $1,2|3,4,5,6$}}}="ab"&&&
+&*++[F]{\txt{\small $1,4|3,5,6$}}="c"\ar@{-}[rrrr]|{\txt{{\small $4,7|1,3,5,6$}}}="ac"&&&
+&*++[F]{\txt{\small $3,7|1,5,6$}}="b"
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+
+\vspace{-7.00mm}
+
+\begin{center}
+\begin{minipage}[ht]{\textwidth}
+\xyoption{all}
+\begin{displaymath}
+    \xymatrix@-0.9pc{
+\txt{\textbf{Tree 6:}} &
+*++[F]{\txt{\small $1,2|3,4,5,6$}}="a" \ar@{-}[rrrrrr]|{\txt{{\small $2,7|1,3,4,5,6$}}}="ab"&&&&&
+&*++[F]{\txt{\small $4,7|1,3,5,6$}}="c"
+}
+\end{displaymath}
+\end{minipage}\hfill
+\end{center}
+\caption{Tree decomposition of the regular-vine structure $M_{gen}$.}
+	\label{fig:trees}
+\end{figure}
+
+Every edge was assigned a Clayton copula with parameter 3.1819, corresponding to Kendall's
+\(\tau\simeq0.61\), to obtain a strongly dependent test case. 100
+independent data sets of 300 observations were generated. For each data set, Trasgu fitted all 2,580,480 seven-dimensional Chimera matrices using the one-parameter copula
+families provided by \texttt{pyvinecopulib} and selected the model with the
+lowest AIC. For comparison, Di{\ss}mann's heuristic algorithm \citep{Dissmann2013} was
+applied to the same synthetic observations. A constrained reference model was
+also fitted using the generating matrix and Clayton copulas, so that only the
+copula parameters were estimated.
+
+The matrix space was divided into ten chunks of at most
+260,000 matrices. Each chunk used up to 16 worker processes, while Snakemake
+submitted and monitored the chunk jobs through the SLURM executor profile.
+Once all chunks of a simulation were available, the workflow combined their
+CSV files and refitted the lowest-AIC candidate.
+
+The generating matrix was selected in 60 of the 100 simulations; 17 different
+matrices were selected at least once. The exhaustive result had a lower AIC
+than the Di{\ss}mann result in every simulation. As shown in
+Figure~\ref{fig:clayton_aic_differences}, the median absolute AIC difference from
+the constrained Clayton reference was 52.2 for the exhaustive search and
+1573.9 for Di{\ss}mann.
+
+The 100 simulations generated 1,000 fitting jobs on Altamira \texttt{compute}
+nodes equipped with Intel Xeon Platinum 8160 processors. Their mean effective
+duration was 17 min 50 s, and at most 60 ran simultaneously, corresponding to
+960 concurrent cores. The interval from the start of the first chunk to
+completion of the last was 5 h 9 min 49 s; these values exclude scheduler
+queueing time. Based on the mean job duration, running the same 100
+sequentially using a single core would have required approximately 198 days.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.82\linewidth]{figures/aic_differences.png}
+    \caption{Empirical cumulative distributions of the absolute AIC difference
+    from a model fitted with the generating matrix and the Clayton family,
+    across 100 independently simulated data sets with 300 observations.}
+    \label{fig:clayton_aic_differences}
+\end{figure}
+
+\subsection{Application to ship-induced waves}
+
+The second experiment used 179 complete observations from a ship-induced wave
+data set \citep{muscalus}. Eight variables describing ship geometry and motion, hydrodynamic
+conditions and measured wake response were selected and transformed to
+pseudo-observations. Trasgu evaluated all 660,602,880 eight-dimensional
+Chimera matrices with the one-parameter family set and AIC selection. With a
+chunk size of 4,000,000, the search produced 166 independent chunk jobs. The
+workflow was initially submitted to Altamira's \texttt{compute} partition,
+whose nodes use Intel Xeon Platinum 8160 processors, with eight cores per job.
+After 129 chunks had completed, execution was interrupted because the disk
+quota was exhausted. Once the storage problem had been resolved, the remaining
+37 chunks were submitted to the \texttt{wncompute\_ifca} partition with 32
+cores per job to shorten their execution. The execution profile and worker
+allocation were changed, while the input data, matrix ranges, fitting controls
+and completed chunk outputs remained unchanged. On relaunch, the workflow
+detected the existing chunk outputs and did not recompute them.
+
+Excluding the approximately 47-hour interruption, the complete experiment
+required about 25 hours of active wall-clock time: 16 h 34 min for the initial
+phase and 8 h 24 min for the resumed phase and final aggregation.
+
+The empirical AIC distribution is shown in
+Figure~\ref{fig:ship-wake-aic-cdf}. At the Di{\ss}mann result, the empirical cumulative
+probability is approximately 0.0061: about 4.04 million of the 660.60 million
+exhaustively fitted structures had an equal or lower AIC.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.82\linewidth]{figures/large_aic_cdf.pdf}
+    \caption{Empirical cumulative distribution of AIC across all 660,602,880
+    eight-dimensional Chimera matrices fitted to the ship-wake data. The
+    dashed line marks the AIC obtained with Di{\ss}mann's sequential method.}
+    \label{fig:ship-wake-aic-cdf}
+\end{figure}
+
+The structures selected by the exhaustive and sequential searches are shown
+in Table~\ref{tab:ship-wake-matrices}.
+
+\begin{table}[!ht]
+\centering
+\scriptsize
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\textbf{Trasgu (Chimera 386126232)}\\[0.4em]
+$
+\begin{pmatrix}
+6 & 2 & 4 & 6 & 6 & 6 & 3 & 3 \\
+4 & 6 & 6 & 1 & 4 & 3 & 6 & 0 \\
+8 & 1 & 1 & 4 & 3 & 4 & 0 & 0 \\
+1 & 4 & 2 & 3 & 1 & 0 & 0 & 0 \\
+2 & 3 & 3 & 2 & 0 & 0 & 0 & 0 \\
+3 & 8 & 8 & 0 & 0 & 0 & 0 & 0 \\
+7 & 7 & 0 & 0 & 0 & 0 & 0 & 0 \\
+5 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+$
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\textbf{Di{\ss}mann}\\[0.4em]
+$
+\begin{pmatrix}
+5 & 1 & 6 & 6 & 4 & 4 & 8 & 8 \\
+6 & 6 & 1 & 4 & 8 & 8 & 4 & 0 \\
+1 & 4 & 4 & 8 & 7 & 7 & 0 & 0 \\
+4 & 5 & 8 & 7 & 6 & 0 & 0 & 0 \\
+2 & 8 & 7 & 1 & 0 & 0 & 0 & 0 \\
+8 & 7 & 5 & 0 & 0 & 0 & 0 & 0 \\
+7 & 2 & 0 & 0 & 0 & 0 & 0 & 0 \\
+3 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+$
+\end{minipage}
+\caption{Regular-vine matrices selected for the ship-wake data by the
+exhaustive Trasgu search and Di{\ss}mann's sequential algorithm.}
+\label{tab:ship-wake-matrices}
+\end{table}
+
+The best exhaustive candidate was Chimera matrix 386126232, with 28 fitted
+parameters, log-likelihood 316.5333 and AIC \(-577.0667\). Applying the
+Di{\ss}mann algorithm to the same pseudo-observations and copula family set
+gave AIC \(-560.7392\). Thus, in this application, searching the complete
+eight-dimensional matrix collection identified a model with an AIC 16.33
+units lower than the sequentially selected model. The fitted pair copulas of
+the exhaustive model are reported in Table~\ref{tab:ship-wake-bicopulas}.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{longtable}{@{}cc>{\centering\arraybackslash}p{1.25cm}>{\centering\arraybackslash}p{2.45cm}lrrr@{}}
+\caption{Pair-copula specification of the best exhaustive ship-wake model
+(Chimera matrix 386126232). Parameters and Kendall's $\tau$ are rounded to two
+decimal places; all variables are continuous.}
+\label{tab:ship-wake-bicopulas}\\
+\toprule
+Tree & Edge & Pair & Conditioning set & Family & Rotation & $\theta$ & $\tau$ \\
+\midrule
+\endfirsthead
+\multicolumn{8}{c}{\tablename\ \thetable{} -- continued}\\
+\toprule
+Tree & Edge & Pair & Conditioning set & Family & Rotation & $\theta$ & $\tau$ \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+1 & 1 & $5,6$ & -- & Gaussian & 0 & 0.67 & 0.46 \\
+1 & 2 & $7,2$ & -- & Gaussian & 0 & 0.06 & 0.04 \\
+1 & 3 & $8,4$ & -- & Frank & 0 & 0.67 & 0.07 \\
+1 & 4 & $2,6$ & -- & Clayton & 0 & 0.86 & 0.30 \\
+1 & 5 & $1,6$ & -- & Joe & 180 & 2.06 & 0.37 \\
+1 & 6 & $4,6$ & -- & Gaussian & 0 & 0.52 & 0.34 \\
+1 & 7 & $6,3$ & -- & Joe & 0 & 1.11 & 0.06 \\
+2 & 1 & $5,4$ & $6$ & Joe & 90 & 1.06 & -0.04 \\
+2 & 2 & $7,6$ & $2$ & Joe & 270 & 1.25 & -0.13 \\
+2 & 3 & $8,6$ & $4$ & Joe & 90 & 1.15 & -0.08 \\
+2 & 4 & $2,1$ & $6$ & Gaussian & 0 & 0.59 & 0.40 \\
+2 & 5 & $1,4$ & $6$ & Gaussian & 0 & -0.73 & -0.52 \\
+2 & 6 & $4,3$ & $6$ & Joe & 180 & 1.26 & 0.13 \\
+3 & 1 & $5,8$ & $4,6$ & Clayton & 270 & 0.05 & -0.02 \\
+3 & 2 & $7,1$ & $6,2$ & Frank & 0 & 1.27 & 0.14 \\
+3 & 3 & $8,1$ & $6,4$ & Joe & 180 & 1.31 & 0.15 \\
+3 & 4 & $2,4$ & $1,6$ & Frank & 0 & -3.15 & -0.32 \\
+3 & 5 & $1,3$ & $4,6$ & Joe & 180 & 1.07 & 0.04 \\
+4 & 1 & $5,1$ & $8,4,6$ & Clayton & 0 & 0.26 & 0.11 \\
+4 & 2 & $7,4$ & $1,6,2$ & Joe & 90 & 1.06 & -0.03 \\
+4 & 3 & $8,2$ & $1,6,4$ & Clayton & 180 & 0.14 & 0.07 \\
+4 & 4 & $2,3$ & $4,1,6$ & Joe & 180 & 1.11 & 0.06 \\
+5 & 1 & $5,2$ & $1,8,4,6$ & Clayton & 0 & 0.22 & 0.10 \\
+5 & 2 & $7,3$ & $4,1,6,2$ & Gumbel & 90 & 1.10 & -0.09 \\
+5 & 3 & $8,3$ & $2,1,6,4$ & Joe & 270 & 1.08 & -0.04 \\
+6 & 1 & $5,3$ & $2,1,8,4,6$ & Clayton & 180 & 0.29 & 0.13 \\
+6 & 2 & $7,8$ & $3,4,1,6,2$ & Joe & 270 & 1.10 & -0.05 \\
+7 & 1 & $5,7$ & $3,2,1,8,4,6$ & Clayton & 180 & 0.21 & 0.10 \\
+\end{longtable}
+\endgroup
+
+\section{Impact}
+
+Trasgu makes exhaustive, or brute-force, fitting usable as a reference for
+evaluating sequential and heuristic structure-selection algorithms. By fitting
+every candidate under the same controls, simulation studies can measure how
+often an algorithm recovers the globally lowest-AIC structure and how its
+performance changes with the dimension, sample size, dependence strength or
+permitted copula families. Exhaustive results can also reveal the multiplicity
+of similarly scoring structures, their stability across data sets and the
+effects of restricting the candidate space, supporting a better understanding
+of vine copula models and their selection procedures.
+
+Trasgu also extends the scale at which Chimera can be investigated. Chimera
+collections are currently available for up to eight variables; a complete
+nine-dimensional collection would contain approximately 380.5 billion
+matrices. The execution and matrix-access infrastructure provided by Trasgu
+makes generating this collection and exploring it systematically a concrete
+next research step, although its construction, representation and distribution
+remain future work.
+
+\section{Conclusions}
+Trasgu provides a lightweight and reproducible execution layer for exhaustive
+fitting of precomputed Chimera vine structures. Deterministic chunking,
+parallel fitting, persistent intermediate results and Trasgu's workflow
+management make searches involving millions of candidate structures feasible
+without introducing a new fitting or selection algorithm. The synthetic and
+ship-wake experiments demonstrate both the scientific value of exhaustive
+searches as references for sequential methods and the practical value of
+resuming an interrupted campaign without repeating completed work. The same
+workflow can be adapted to local computers and different HPC schedulers through
+execution profiles. A next step will be to generate and provide access to the
+nine-dimensional Chimera collection and to evaluate its exhaustive fitting
+with Trasgu. Future work will also evaluate genuinely distributed cloud
+execution, including Kubernetes-based deployments.
+
+\section*{Data availability}
+
+The configurations, workflow snapshots, derived results and selected execution
+artifacts supporting the experiments are available from the accompanying
+Zenodo data record \citep{TrasguExperiments2026}. The source CSV used in the
+ship-wake experiment is not redistributed because the authors do not hold
+redistribution rights. The provenance of the ship-wake data is described in
+\cite{muscalus}.
+
+\section*{Acknowledgements}
+
+This work was supported by project PID2023-150689OB-I00. The project was funded by MCIN/AEI/\allowbreak 10.13039/\allowbreak 501100011033 and co-funded by the European Union (ERDF).
+
+\appendix
+
+\section{Command-line tools}
+\label{app:cli}
+
+Table~\ref{tab:commands} summarizes the command-line tools provided by Trasgu,
+grouped according to their main function.
+
+\begin{table}[htbp]
+\centering
+\caption{Command-line tools provided by Trasgu.}
+\label{tab:commands}
+\begin{tabular}{
+  @{}
+  >{\raggedright\arraybackslash}p{0.28\textwidth}
+  >{\raggedright\arraybackslash}p{0.64\textwidth}
+  @{}
+}
+\toprule
+\textbf{Function} & \textbf{Commands} \\
+\midrule
+
+Preparation and planning
+& \texttt{trasgu\_examples}, \texttt{trasgu\_count\_chunks},
+  \texttt{trasgu\_time\_fit} \\
+
+Execution and monitoring
+& \texttt{trasgu\_run}, \texttt{trasgu\_monitor},
+  \texttt{trasgu\_fit\_chunk} \\
+
+Results
+& \texttt{trasgu\_combine}, \texttt{trasgu\_best\_fits} \\
+
+Chimera matrices
+& \texttt{trasgu\_get\_matrix}, \texttt{trasgu\_find\_matrix},
+  \texttt{trasgu\_fit\_given\_matrix},
+  \texttt{trasgu\_download\_zarr} \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+%% \appendix
+
+%% \section{}
+%% \label{}
+
+%% References:
+%% If you have bibdatabase file and want bibtex to generate the
+%% bibitems, please use
+%%
+%%  \bibliographystyle{elsarticle-num} 
+%%  \bibliography{<your bibdatabase>}
+
+%% else use the following coding to input the bibitems directly in the
+%% TeX file.
+
+\begin{thebibliography}{00}
+
+\bibitem{Joe1996}
+H. Joe, Families of $m$-variate distributions with given margins and
+$m(m-1)/2$ bivariate dependence parameters, in: L. R{\"u}schendorf,
+B. Schweizer, M.D. Taylor (Eds.), Distributions with Fixed Marginals and
+Related Topics, Lecture Notes--Monograph Series, Vol. 28, Institute of
+Mathematical Statistics, 1996, pp. 120--141.
+doi:10.1214/lnms/1215452614.
+
+\bibitem{BedfordCooke2001}
+T. Bedford, R.M. Cooke, Probability density decomposition for conditionally
+dependent random variables modeled by vines, Annals of Mathematics and
+Artificial Intelligence 32 (2001) 245--268.
+doi:10.1023/A:1016725902970.
+
+\bibitem{BedfordCooke2002}
+T. Bedford, R.M. Cooke, Vines: A new graphical model for dependent random
+variables, The Annals of Statistics 30(4) (2002) 1031--1068.
+doi:10.1214/aos/1031689016.
+
+\bibitem{Aas2009}
+K. Aas, C. Czado, A. Frigessi, H. Bakken, Pair-copula constructions of
+multiple dependence, Insurance: Mathematics and Economics 44(2) (2009)
+182--198. doi:10.1016/j.insmatheco.2007.02.001.
+
+\bibitem{Joe2014}
+H. Joe, Dependence Modeling with Copulas, Chapman and Hall/CRC, Boca Raton,
+2014. doi:10.1201/b17116.
+
+\bibitem{Czado2019}
+C. Czado, Analyzing Dependent Data with Vine Copulas: A Practical Guide with R,
+Lecture Notes in Statistics, Vol. 222, Springer, Cham, 2019.
+doi:10.1007/978-3-030-13785-4.
+
+\bibitem{Dissmann2013}
+J. Di{\ss}mann, E.C. Brechmann, C. Czado, D. Kurowicka, Selecting and
+estimating regular vine copulae and application to financial returns,
+Computational Statistics \& Data Analysis 59 (2013) 52--69.
+doi:10.1016/j.csda.2012.08.010.
+
+\bibitem{Vuong1989}
+Q.H. Vuong, Likelihood ratio tests for model selection and non-nested
+hypotheses, Econometrica 57(2) (1989) 307--333.
+doi:10.2307/1912557.
+
+\bibitem{MoralesNapoles2023Chimera}
+O. Morales-N{\'a}poles, M. Rajabi-Bahaabadi, G.A. Torres-Alves,
+C.M.P. {'t} Hart, Chimera: An atlas of regular vines on up to 8 nodes,
+Scientific Data 10 (2023) 337. doi:10.1038/s41597-023-02252-6.
+
+\bibitem{Hart2023ChimeraDataset}
+C.M.P. {'t} Hart, O. Morales-N{\'a}poles, M. Rajabi, G.A. Torres Alves,
+Chimera -- regular vines Python (4 to 8 nodes), 4TU.ResearchData, version 1
+(2023). doi:10.4121/20655120.v1.
+
+\bibitem{Miles2020Zarr}
+A. Miles, J. Kirkham, M. Durant, J. Bourbeau, T. Onalan, J. Hamman, et al.,
+Zarr, Zenodo (2020). doi:10.5281/zenodo.3773450.
+
+\bibitem{MoralesNapoles2026ESREL}
+O. Morales-N{\'a}poles, Recent experience with the use of Chimera for vine
+copula modelling and future challenges, in: J.C. Matos, P.B. Louren{\c{c}}o,
+M. Beer, D. Oliveira, E. Patelli, H.S. Sousa, R.A. Silva, M. Santamaria
+(Eds.), Proceedings of the European Safety and Reliability Conference
+(ESREL 2026), Research Publishing, Singapore, 2026, pp. 939--946.
+doi:10.3850/ESREL2026061419\_esrel26-p26138-cd.
+
+\bibitem{MoralesNapoles2026AIC}
+O. Morales-N{\'a}poles, C.M.P. {'t} Hart, G.A. Torres-Alves, E. Perrone,
+E. Ragno, P. Mares-Nasarre, Benchmarking Maximum Weight Spanning Tree Selection for Simplified Vine Copulas: Simulation and Real-Data Studies, manuscript under preparation, 2026.
+
+\bibitem{KosterRahmann2012}
+J. K{\"o}ster, S. Rahmann, Snakemake---a scalable bioinformatics workflow
+engine, Bioinformatics 28(19) (2012) 2520--2522.
+doi:10.1093/bioinformatics/bts480.
+
+\bibitem{IFCAAltamira}
+IFCA Advanced Computing and e-Science Group, High Performance Computing:
+Altamira Supercomputing Node at University of Cantabria, 2026.
+URL: \url{https://confluence.ifca.es/spaces/IC/pages/66176/High+Performance+Computing}.
+
+\bibitem{Nagler2023}
+T. Nagler, V. Bumann, T. Vatter, pyvinecopulib: A Python interface to
+vinecopulib, 2023. URL: \url{https://github.com/vinecopulib/pyvinecopulib}.
+
+\bibitem{Schepsmeier2018}
+U. Schepsmeier, J. Stoeber, E.C. Brechmann, B. Graeler, T. Nagler,
+T. Erhardt, VineCopula: Statistical inference of vine copulas, R package,
+2018. URL: \url{https://cran.r-project.org/package=VineCopula}.
+
+\bibitem{CookeBedford2025}
+R.M. Cooke, T. Bedford, Identifiability and the simplifying assumption,
+in: T. Nagler, D. Kurowicka, R.M. Cooke, H. Joe (Eds.),
+Statistical Dependence Modeling, Springer, 2026, pp. 109--129.
+doi:10.1007/978-3-032-14252-8\_6.
+
+\bibitem{Trasgu011}
+V. Fern\'andez-Quiruelas, Trasgu, version 0.1.1, Zenodo, 2026.
+doi:10.5281/zenodo.22143421.
+
+\bibitem{TrasguExperiments2026}
+V. Fern\'andez-Quiruelas, P. Mares-Nasarre, M. {'t} Hart,
+O. Morales-N\'apoles, Experimental data and derived results for the Trasgu
+SoftwareX article, version 1.0.0, Zenodo, 2026.
+doi:10.5281/zenodo.21807187.
+
+\bibitem{muscalus}
+A. C. Muscalus  and K. A. Haas  and D. R. Webster, Observations of Primary Ship Waves at the Margins of a Confined Tidal River, Journal of Waterway, Port, Coastal, and Ocean Engineering 150, 5 (2024) 04024009. doi:10.1061/JWPED5.WWENG-2062
+
+% %% \bibitem{label}
+% %% Text of bibliographic item
+
+% \bibitem{} Use this style of ordering. References in-text should also use a similar style.
+
+\end{thebibliography}
+
+\section*{Current executable software version}
+\label{currentExecutableVersion}
+
+The archived Trasgu v0.1.1 release is described in \cite{Trasgu011} and is
+available from PyPI at
+\url{https://pypi.org/project/trasgu/0.1.1/}.
+
+\end{document}
+\endinput
+%%
+%% End of file `SoftwareX_article_template.tex'.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
