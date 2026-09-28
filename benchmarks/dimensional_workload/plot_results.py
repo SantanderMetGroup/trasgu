@@ -70,7 +70,7 @@ def main() -> None:
         times,
         width=width,
         color=BLUE,
-        label="Fitting time",
+        label="Estimated fitting time",
     )
     matrix_bars = matrix_axis.bar(
         matrix_positions,
@@ -82,7 +82,7 @@ def main() -> None:
 
     time_axis.set(
         xlabel="Number of variables",
-        ylabel="Sequential fitting time (minutes)",
+        ylabel="Estimated fitting time (minutes)",
         xticks=variables,
         yscale="log",
     )
