@@ -10,6 +10,8 @@ import numpy as np
 import pyvinecopulib as pv
 import yaml
 
+from model import MATRIX, generating_model
+
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_INPUT = HERE / "vinecop_samples.txt"
@@ -68,37 +70,12 @@ def main() -> None:
     )
 
     model = pv.Vinecop.from_data(data, controls=controls_dissmann)
-    # Get the ground truth AIC and matrix for the Clayton vine copula with 7 variables
-
-    # CHIMERA MATRIX 7 VARS: 25200
-    matrix =np.array([
-        [6, 4, 4, 4, 6, 6],
-        [4, 5, 3, 6, 4, 0],
-        [3, 3, 6, 3, 0, 0],
-        [5, 6, 5, 0, 0, 0],
-        [2, 2, 0, 0, 0, 0],
-        [1, 0, 0, 0, 0, 0],
-    ])
-
-
-    bicop = pv.Bicop(pv.clayton, parameters=np.array([[3.1819]]))
-    pair_copulas = [
-        [bicop, bicop, bicop, bicop, bicop],
-        [bicop, bicop, bicop, bicop],
-        [bicop, bicop, bicop],
-        [bicop, bicop],
-        [bicop]
-    ]
-
-    vinecop = pv.Vinecop.from_structure(matrix=matrix, pair_copulas=pair_copulas)
+    vinecop = generating_model()
     ground_truth_aic = vinecop.aic(data)
-    print(f"Ground truth AIC for Clayton vine copula with 7 variables: {ground_truth_aic}")
-
-    # Fit the parameter of the Clayton copula to the data
-    # and compute the AIC for the fitted model
-    vinecop_clayton = pv.Vinecop.from_data(data, matrix=matrix, controls=controls_clayton)
+    vinecop_clayton = pv.Vinecop.from_data(
+        data, matrix=MATRIX, controls=controls_clayton
+    )
     fixed_matrix_clayton_aic = vinecop_clayton.aic()
-    print(f"Fitted AIC for Clayton vine copula with 7 variables: {fixed_matrix_clayton_aic}")
 
     result = {
         "aic_dissmann": float(model.aic()),
@@ -111,7 +88,6 @@ def main() -> None:
         yaml.safe_dump(result, output_file, sort_keys=False)
 
     print(f"Reference fits saved to: {args.output}")
-
 
 
 if __name__ == "__main__":

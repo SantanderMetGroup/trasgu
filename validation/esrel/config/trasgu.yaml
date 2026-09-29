@@ -1,0 +1,5 @@
+data_file: vinecop_samples.txt
+chunk_size: 480
+max_workers: 1
+debug: false
+# simulate_vines.py adds the absolute path of the prepared local Chimera store.

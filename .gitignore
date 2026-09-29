@@ -38,3 +38,9 @@ paper/
 !/experiments/zenodo/staging/ship_wake/raw_results/
 /experiments/zenodo/staging/ship_wake/raw_results/*
 !/experiments/zenodo/staging/ship_wake/raw_results/README.md
+
+# Reproducible local ESREL runs (inputs, catalogues, logs and outputs).
+/validation/esrel/runs/
+
+# Generated mixed-family validation runs.
+/validation/mixed_5d/runs/

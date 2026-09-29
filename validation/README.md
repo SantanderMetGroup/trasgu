@@ -1,29 +1,30 @@
 # Validation
 
-This directory contains scientific validation workflows. These are distinct
-from the small packaged examples, performance benchmarks, and article case
-studies.
+This directory aims to demonstrate that **Trasgu with Chimera matrices stored
+in Zarr** reproduces **manual sequential fitting using the original Chimera
+files from TU Delft**. The comparison fits every matrix with both methods,
+using identical observations and `pyvinecopulib` settings, and checks the AIC
+of every fitted model, not only the best fit.
 
-## Cases
+Generation uses families belonging to `pyvinecopulib.one_par` (Clayton or
+Gaussian). Exhaustive fitting and Dißmann selection use `one_par`; fixed-model
+references retain the generating families and re-estimate their parameters.
 
-- `clayton_6_t13`: repeated synthetic validation for a fixed
-  six-dimensional Clayton vine, comparing exhaustive Chimera fitting,
-  Dissmann selection, and the fixed generating structure.
-- `esrel`: five-dimensional validation used for the ESREL workflow. It also
-  preserves the previous manual implementation under `legacy/` so its output
-  can be compared with Trasgu.
+Each case contains 100 simulations with 300 observations each:
 
-Generated simulation directories are written below each case as
-`simulations/` and are ignored by Git. Curated comparison tables and figures
-belong in each case's `results/` directory.
+| Case | Generating model | Matrices per dataset | Trasgu–manual agreement |
+| --- | --- | --- | --- |
+| [ESREL](esrel/README.md) | 5 variables, 10 Clayton edges | 480 | All 48,000 paired fits agree |
+| [Mixed families](mixed_5d/README.md) | 5 variables, 6 Clayton and 4 Gaussian edges | 480 | All 48,000 paired fits agree |
 
-Regenerate the validation figures from the repository root:
 
-```bash
-python validation/plot_aic_differences.py \
-  validation/clayton_6_t13/results/aic_comparison.csv
-python validation/plot_aic_differences.py \
-  validation/esrel/results/aic_comparison.csv
-```
+Both cases fit **all matrices in both ways** and obtain the
+same AICs within `1e-5`, with maximum discrepancies below `5e-7`, consistent
+with Trasgu's six-decimal CSV output.  Both methods use
+`pyvinecopulib`, so this validates matrix storage and execution rather than
+independently validating the fitting library.
 
-All figures use the shared style in `styles/trasgu.mplstyle`.
+From the repository root, install with `uv sync --frozen --extra benchmarks`.
+Each case README provides its run command and results. Compact results belong
+in `results/`; generated observations, catalogues, full fit tables and logs
+are ignored by Git. Figures use `styles/trasgu.mplstyle`.

@@ -4,7 +4,7 @@ import sys
 HERE = Path(workflow.basedir)
 RUN = Path(config.get('run_dir', HERE / 'runs' / 'default')).resolve()
 SIMULATIONS = range(1, int(config.get('iterations', 100)) + 1)
-SEED = int(config.get('seed', 20260928))
+SEED = int(config.get('seed', 20260929))
 OBSERVATIONS = int(config.get('observations', 300))
 PYTHON = sys.executable
 ASSETS = RUN / 'assets'
@@ -24,7 +24,8 @@ rule prepare_matrices:
     input:
         script=str(HERE / 'scripts' / 'prepare_matrices.py'),
         model=str(HERE / 'scripts' / 'model.py'),
-        loader=str(HERE / 'scripts' / 'manual' / 'get_matrices.py'),
+        shared=str(HERE.parent / '_shared' / 'chimera.py'),
+        loader=str(HERE.parent / '_shared' / 'get_matrices.py'),
     output:
         manifest=str(ASSETS / 'manifest.json'),
         store=directory(str(CHIMERA)),
@@ -33,7 +34,7 @@ rule prepare_matrices:
         destination=str(ASSETS),
         url=CHIMERA_URL,
     shell:
-        '{PYTHON:q} {input.script:q} {params.destination:q} --chimera-url {params.url:q}'
+        '{PYTHON:q} -m validation.mixed_5d.scripts.prepare_matrices {params.destination:q} --chimera-url {params.url:q}'
 
 rule simulate_inputs:
     input:
@@ -50,7 +51,7 @@ rule simulate_inputs:
         seed=SEED,
         observations=OBSERVATIONS,
     shell:
-        '{PYTHON:q} {input.script:q} {params.destination:q} --iteration {wildcards.iteration} '
+        '{PYTHON:q} -m validation.mixed_5d.scripts.simulate_vines {params.destination:q} --iteration {wildcards.iteration} '
         '--seed {params.seed} --observations {params.observations} --chimera {CHIMERA:q}'
 
 rule run_trasgu_simulation:
@@ -77,18 +78,18 @@ rule fit_reference_models:
     output:
         SAMPLE + '/reference_fits_{iteration}.yaml',
     shell:
-        '{PYTHON:q} {input.script:q} {input.data:q} {output:q} --threads 1'
+        '{PYTHON:q} -m validation.mixed_5d.scripts.fit_reference_models {input.data:q} {output:q}'
 
 rule run_manual_fit:
     input:
         data=SAMPLE + '/vinecop_samples.txt',
-        script=str(HERE / 'scripts' / 'manual' / 'manual_fit.py'),
-        loader=str(HERE / 'scripts' / 'manual' / 'get_matrices.py'),
+        script=str(HERE.parent / '_shared' / 'manual_fit.py'),
+        loader=str(HERE.parent / '_shared' / 'get_matrices.py'),
         matrices=str(ASSETS / 'legacy'),
     output:
         SAMPLE + '/manual_fits_{iteration}.csv',
     shell:
-        '{PYTHON:q} {input.script:q} {input.data:q} {output:q} --matrices {input.matrices:q}'
+        '{PYTHON:q} -m validation._shared.manual_fit {input.data:q} {output:q} --matrices {input.matrices:q}'
 
 rule compare_aic:
     input:
@@ -98,22 +99,24 @@ rule compare_aic:
         metadata=expand(SAMPLE + '/simulation.json', iteration=SIMULATIONS),
         manifest=str(ASSETS / 'manifest.json'),
         script=str(HERE / 'scripts' / 'compare_results.py'),
+        shared=str(HERE.parent / '_shared' / 'comparison.py'),
     output:
         csv=str(RESULT / 'aic_comparison.csv'),
         summary=str(RESULT / 'summary.json'),
     params:
         iterations=len(SIMULATIONS),
     shell:
-        '{PYTHON:q} {input.script:q} {RUN:q} --iterations {params.iterations}'
+        '{PYTHON:q} -m validation.mixed_5d.scripts.compare_results {RUN:q} --iterations {params.iterations}'
 
 rule plot:
     input:
         csv=str(RESULT / 'aic_comparison.csv'),
         script=str(HERE / 'scripts' / 'plot_results.py'),
+        shared=str(HERE.parent / '_shared' / 'comparison.py'),
         style=str(HERE.parent.parent / 'styles' / 'trasgu.mplstyle'),
     output:
         str(RESULT / 'aic_differences.{extension}'),
     wildcard_constraints:
         extension='png|pdf|svg',
     shell:
-        '{PYTHON:q} {input.script:q} {input.csv:q} --output {output:q}'
+        '{PYTHON:q} -m validation.mixed_5d.scripts.plot_results {input.csv:q} --output {output:q}'

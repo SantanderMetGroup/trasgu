@@ -1,0 +1,19 @@
+{
+  "iterations": 100,
+  "matrices_per_iteration": 480,
+  "matrix_comparisons": 48000,
+  "aic_tolerance": 1e-05,
+  "max_matrix_aic_error": 4.999819793738425e-07,
+  "all_manual_comparisons_passed": true,
+  "generating_matrix_id": 61,
+  "generating_matrix_selected_including_ties": 95,
+  "distinct_selected_matrices": 5,
+  "exhaustive_better_than_dissmann": 100,
+  "exhaustive_tied_with_dissmann": 0,
+  "exhaustive_worse_than_dissmann": 0,
+  "delta_aic_dissmann_min_median_max": [
+    -761.3486441667555,
+    -557.941499225997,
+    -382.5910986447939
+  ]
+}

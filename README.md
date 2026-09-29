@@ -174,6 +174,21 @@ and reproduction commands.
 
 Scientific validation workflows live under `validation/`. They compare Trasgu
 with reference fits and, where applicable, the previous manual implementation.
+The [mixed-family validation](validation/mixed_5d/README.md) checks Trasgu
+against a sequential loop over the original TU Delft matrices using a
+five-variable Clayton–Gaussian generating model.
+
+The [ESREL validation guide](validation/esrel/README.md) provides a complete
+local example associated with *Recent experience with the use of Chimera for
+vine copula modelling and future challenges*: seeded data, checks of all 480
+five-variable structures against the manual implementation, reference fits,
+and reproducible figures. Start with a one-simulation pilot:
+
+```bash
+uv sync --frozen --extra benchmarks
+uv run --no-sync python validation/esrel/run_validation.py --run-dir validation/esrel/runs/reproduce-pilot --iterations 1 --cores 1
+```
+
 See [`validation/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/validation/README.md) for the available cases and
 reproduction commands.
 
