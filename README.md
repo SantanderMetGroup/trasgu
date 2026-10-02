@@ -152,7 +152,7 @@ small examples packaged with Trasgu:
   and selected outputs are distributed through Zenodo.
 - `ship_wake` contains the eight-variable ship-wake case study.
 
-See [`experiments/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/experiments/README.md) for the distinction
+See [`experiments/README.md`](experiments/README.md) for the distinction
 between execution snapshots, committed summaries, and the common external data
 record containing both experiments.
 
@@ -167,7 +167,7 @@ separate from scientific experiments and use the shared Matplotlib style in
 - `pyvinecopulib_thread_scaling` measures the scaling of one fixed fit as the
   number of `pyvinecopulib` threads increases.
 
-See [`benchmarks/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/benchmarks/README.md) for the benchmark protocol
+See [`benchmarks/README.md`](benchmarks/README.md) for the benchmark protocol
 and reproduction commands.
 
 ## Validation

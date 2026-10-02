@@ -21,8 +21,9 @@ execution records. The preparation script below defaults to
 GitHub contains the scripts, snapshots, compact comparison table and figures.
 The data package uploaded to Zenodo contains the 100 original inputs, per-iteration reference
 and best-fit results, configurations and main logs. Only iteration 99 retains
-the complete 2,580,480-row exhaustive result table. See
-[`../zenodo/staging/clayton_7d/README.md`](../zenodo/staging/clayton_7d/README.md) for the revised package and source deposit.
+the complete 2,580,480-row exhaustive result table. The source deposit is
+[doi:10.5281/zenodo.21807187](https://doi.org/10.5281/zenodo.21807187); see
+[`../zenodo/README.md`](../zenodo/README.md) for the common package layout and building instructions.
 
 The repository is organized as follows:
 
@@ -45,8 +46,9 @@ with the full fit table stored inside `simulations/iteration_99/`.
 
 Use a checkout of this repository with Python and its dependencies installed
 (for example, `python -m pip install -e '.[benchmarks,slurm]'`). Extract the
-revised `clayton_7d-softwarex-v2.tar.gz` package, then run from the repository
-root, replacing `/path/to/clayton_7d-softwarex-v2` with its location:
+`clayton_7d-softwarex-v2.tar.gz` package (from the Zenodo deposit or packaged via
+`experiments/zenodo/build_deposit.py`), then run from the repository root,
+replacing `/path/to/clayton_7d-softwarex-v2` with its extracted location:
 
 ```bash
 python experiments/clayton_7d/analysis/verify_data.py /path/to/clayton_7d-softwarex-v2
@@ -122,4 +124,6 @@ snakemake --cores 5
 `simulate.py` writes new observations and reference fits for iterations 1–100.
 Its root-level `vinecop_samples.txt` is a bootstrap input used to infer the
 seven-variable collection, not an analyzed dataset. Repeating the generator
-in the same directory overwrites its generated inputs. 
+in the same directory overwrites its generated inputs.
+
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.

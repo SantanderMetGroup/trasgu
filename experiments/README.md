@@ -15,6 +15,7 @@ workflows under `validation`.
 Each experiment README documents whether its configurations are portable or
 preserved as exact, infrastructure-specific execution snapshots.
 
-The two experiments are published together in one Zenodo record, as separate
+The two experiments are published together in one Zenodo record
+([doi:10.5281/zenodo.21807187](https://doi.org/10.5281/zenodo.21807187)), as separate
 archives so that either dataset can be downloaded independently. See
 [`zenodo/README.md`](zenodo/README.md) for the common deposit layout.

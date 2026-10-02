@@ -27,9 +27,10 @@ to reproduce the figure. The retained raw chunk is only a representative
 subset and cannot reconstruct this full distribution.
 
 The repository contains `workflow/`, `original_execution/`, `analysis/`,
-`results/` and `figures/`. The reviewed Zenodo package additionally contains
-selected logs and one representative raw chunk; see its
-[README](../zenodo/staging/ship_wake/README.md).
+`results/` and `figures/`. The accompanying Zenodo package (`ship_wake-softwarex-v2.tar.gz`)
+additionally contains selected logs and one representative raw chunk. The source deposit is
+[doi:10.5281/zenodo.21807187](https://doi.org/10.5281/zenodo.21807187); see
+[`../zenodo/README.md`](../zenodo/README.md) for the common package layout and building instructions.
 
 ## Reproduce the figure
 
@@ -66,3 +67,5 @@ these settings. Chimera is read remotely by default; use `--chimera` for a
 local directory or another HTTP(S) URL. Nodes need access to the selected store.
 The archived scripts and configuration in `original_execution/` are preserved
 as execution records. Numerical results may depend on software versions.
+
+Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.
