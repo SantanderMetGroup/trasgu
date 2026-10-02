@@ -10,19 +10,13 @@ import hashlib
 import shutil
 import tarfile
 import tempfile
+import subprocess
+import sys
 from pathlib import Path
 
-VERSION = "v1"
 EXPECTED_SHIP_CHUNK_SHA256 = (
     "c6acbf1db281905e186701f64616c00aad1c6b00dfc44d18aa72e7d3d4703d60"
 )
-EXCLUDED_NAMES = {
-    ".DS_Store",
-    ".ruff_cache",
-    ".snakemake",
-    "__pycache__",
-    "fontlist-v3.11.0.json",
-}
 FORBIDDEN_SHIP_NAMES = {
     "UI-1_ship_and_wake_data_for_TUDelft.csv",
     "unity_inbound.txt",
@@ -42,17 +36,6 @@ def copy_file(source: Path, destination: Path) -> None:
         raise FileNotFoundError(f"Required file not found: {source}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)
-
-
-def copy_tree(source: Path, destination: Path) -> None:
-    if not source.is_dir():
-        raise FileNotFoundError(f"Required directory not found: {source}")
-    shutil.copytree(
-        source,
-        destination,
-        ignore=shutil.ignore_patterns(*EXCLUDED_NAMES),
-        dirs_exist_ok=True,
-    )
 
 
 def write_checksums(root: Path) -> None:
@@ -105,180 +88,65 @@ def make_archive(source: Path, destination: Path) -> None:
                 archive.addfile(info)
 
 
-def successful_log(logs: list[Path]) -> Path | None:
-    successes = []
-    for path in logs:
-        contents = path.read_text(encoding="utf-8", errors="replace")
-        saved_result = "Results saved to" in contents
-        completed_job = "1 of 1 steps (100%) done" in contents
-        failed_job = any(
-            marker in contents
-            for marker in (
-                "command exited with non-zero exit code",
-                "WorkflowError:",
-                "CANCELLED",
-            )
-        )
-        if (saved_result or completed_job) and not failed_job:
-            successes.append(path)
-    return max(successes, key=lambda path: int(path.stem)) if successes else None
-
-
-def validate_ship_source(repo: Path) -> None:
-    experiment = repo / "experiments" / "ship_wake"
-    common = repo / "experiments" / "zenodo"
-    required_files = (
-        experiment / "zenodo" / "DATASET_README.md",
-        experiment / "zenodo" / "RAW_CHUNK_README.md",
-        experiment / "zenodo" / "execution_environment.txt",
-        experiment / "zenodo" / "software_revision.txt",
-        experiment / "PrepareData.py",
-        experiment / "dissmann.py",
-        experiment / "plot_large_aic_cdf.py",
-        experiment / "processed_aic_cdf.npz",
-        experiment / "results" / "best_fits.txt",
-        experiment / "results" / "large_aic_cdf.pdf",
-        experiment / "results" / "large_aic_cdf.png",
-        experiment / ".trasgu_ship_wake" / "fit_chunk_0067_4000000.csv",
-        repo / "styles" / "trasgu.mplstyle",
-        common / "LICENSE",
-        common / "RIGHTS.md",
-        common / "THIRD_PARTY_NOTICES.md",
+def validate_ship_source(source: Path) -> None:
+    required = (
+        "README.md", "LICENSE", "MANIFEST.txt", "workflow/prepare_run.py",
+        "original_execution/Snakefile", "original_execution/trasgu.yaml",
+        "original_execution/slurm_profile.yaml", "analysis/plot_large_aic_cdf.py",
+        "results/best_fits.txt", "results/processed_aic_cdf.npz",
+        "figures/large_aic_cdf.pdf", "figures/large_aic_cdf.png",
+        "styles/trasgu.mplstyle", "metadata/chunk_manifest.csv",
+        "metadata/execution_environment.txt", "metadata/software_revision.txt",
+        "logs/final_combination.log",
     )
-    required_directories = (
-        experiment / "execution_snapshot",
-        experiment / ".snakemake" / "slurm_logs" / "rule_fit_chunk",
-        experiment / ".snakemake" / "log",
-    )
-    missing = [path for path in required_files if not path.is_file()]
-    missing.extend(path for path in required_directories if not path.is_dir())
+    missing = [name for name in required if not (source / name).is_file()]
     if missing:
-        details = "\n  ".join(str(path) for path in missing)
-        raise FileNotFoundError(f"Ship-wake package source is incomplete:\n  {details}")
+        raise RuntimeError("Ship-wake staging is incomplete: " + ", ".join(missing))
+    verify_ship_exclusions(source)
+    digest = hashlib.sha256()
+    count = 0
+    with gzip.open(source / "raw_results/fit_chunk_0067_4000000.csv.gz", "rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+            count += block.count(b"\n")
+    if digest.hexdigest() != EXPECTED_SHIP_CHUNK_SHA256 or count != 4_000_000:
+        raise RuntimeError("Ship-wake raw chunk differs from the deposited original")
+    with (source / "metadata/chunk_manifest.csv").open() as stream:
+        rows = list(csv.DictReader(stream))
+    if [row["chunk_id"] for row in rows] != [f"{i:04d}" for i in range(166)]:
+        raise RuntimeError("Expected manifest entries for all 166 chunks")
+    for row in rows:
+        log = source / "logs/successful_chunks" / f"chunk_{row['chunk_id']}.log"
+        content = log.read_text()
+        if "Results saved to" not in content and "1 of 1 steps (100%) done" not in content:
+            raise RuntimeError(f"No completion marker in {log}")
+        for job in filter(None, row["other_attempt_job_ids"].split(";")):
+            if not (source / "logs/failed_chunk_attempts" / row["chunk_id"] / f"{job}.log").is_file():
+                raise RuntimeError(f"Missing archived attempt {job}")
+    print("Verified ship-wake chunk and execution logs for all 166 chunks.")
 
 
 def validate_clayton_source(source: Path) -> None:
     required = (
-        "README.md",
-        "metadata",
-        "workflow_snapshots",
-        "runs_by_sample_size",
-        "repeated_300/summary",
-        "sample_size_scaling/summary",
-        "sample_size_scaling/timing_logs",
-        "representative_full_fits/iteration_99_300",
-        "representative_full_fits/iteration_1_3000",
+        "README.md", "LICENSE", "MANIFEST.txt",
+        "metadata/software_revision.txt", "metadata/execution_commands.txt",
+        "metadata/execution_environment.txt", "metadata/package_provenance.txt",
+        "original_execution", "workflow", "analysis", "figures",
+        "styles/trasgu.mplstyle", "results/aic_comparison.csv",
+        "simulations/iteration_99/fit_iteration_99.csv",
     )
     missing = [name for name in required if not (source / name).exists()]
     if missing:
-        raise RuntimeError(
-            "Clayton package source is incomplete; missing: " + ", ".join(missing)
-        )
+        raise RuntimeError("Clayton staging is incomplete: " + ", ".join(missing))
+    verifier = Path(__file__).resolve().parents[1] / "clayton_7d/analysis/verify_data.py"
+    subprocess.run([sys.executable, str(verifier), str(source)], check=True)
 
 
-def build_ship_wake(repo: Path, staging: Path) -> Path:
-    experiment = repo / "experiments" / "ship_wake"
-    common = repo / "experiments" / "zenodo"
-    package = staging / f"ship_wake-softwarex-{VERSION}"
-
-    copy_file(experiment / "zenodo" / "DATASET_README.md", package / "README.md")
-    copy_file(common / "LICENSE", package / "LICENSE")
-    copy_file(common / "RIGHTS.md", package / "RIGHTS.md")
-    copy_file(common / "THIRD_PARTY_NOTICES.md", package / "THIRD_PARTY_NOTICES.md")
-    for name in ("PrepareData.py", "dissmann.py"):
-        copy_file(experiment / name, package / "code" / name)
-    copy_tree(experiment / "execution_snapshot", package / "workflow_snapshot")
-    copy_file(
-        experiment / "results" / "best_fits.txt",
-        package / "results" / "best_fits.txt",
-    )
-    copy_file(
-        experiment / "plot_large_aic_cdf.py",
-        package / "analysis" / "plot_large_aic_cdf.py",
-    )
-    copy_file(
-        experiment / "processed_aic_cdf.npz",
-        package / "analysis" / "processed_aic_cdf.npz",
-    )
-    copy_file(
-        repo / "styles" / "trasgu.mplstyle",
-        package / "analysis" / "styles" / "trasgu.mplstyle",
-    )
-    for suffix in ("pdf", "png"):
-        copy_file(
-            experiment / "results" / f"large_aic_cdf.{suffix}",
-            package / "analysis" / "results" / f"large_aic_cdf.{suffix}",
-        )
-    for name in ("execution_environment.txt", "software_revision.txt"):
-        copy_file(experiment / "zenodo" / name, package / "metadata" / name)
-
-    raw_chunk = experiment / ".trasgu_ship_wake" / "fit_chunk_0067_4000000.csv"
-    if sha256(raw_chunk) != EXPECTED_SHIP_CHUNK_SHA256:
-        raise RuntimeError(f"Unexpected representative chunk contents: {raw_chunk}")
-    if sum(1 for _ in raw_chunk.open("rb")) != 4_000_000:
-        raise RuntimeError(f"Representative chunk does not have 4,000,000 rows: {raw_chunk}")
-    compressed_chunk = package / "raw_results" / f"{raw_chunk.name}.gz"
-    compressed_chunk.parent.mkdir(parents=True, exist_ok=True)
-    with (
-        raw_chunk.open("rb") as source,
-        compressed_chunk.open("wb") as target,
-        gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0) as output,
-    ):
-        shutil.copyfileobj(source, output)
-    copy_file(
-        experiment / "zenodo" / "RAW_CHUNK_README.md",
-        package / "raw_results" / "README.md",
-    )
-
-    log_root = experiment / ".snakemake" / "slurm_logs" / "rule_fit_chunk"
-    chunk_rows: list[tuple[str, str, str]] = []
-    for chunk_number in range(166):
-        chunk = f"{chunk_number:04d}"
-        logs = sorted((log_root / chunk).glob("*.log"))
-        success = successful_log(logs)
-        if success is None:
-            raise RuntimeError(f"No successful SLURM log found for chunk {chunk}")
-        copy_file(success, package / "logs" / "successful_chunks" / f"chunk_{chunk}.log")
-        failures = [path for path in logs if path != success]
-        for failure in failures:
-            copy_file(
-                failure,
-                package / "logs" / "failed_chunk_attempts" / chunk / failure.name,
-            )
-        chunk_rows.append((chunk, success.stem, ";".join(path.stem for path in failures)))
-
-    manifest = package / "metadata" / "chunk_manifest.csv"
-    manifest.parent.mkdir(parents=True, exist_ok=True)
-    with manifest.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.writer(stream, lineterminator="\n")
-        writer.writerow(("chunk_id", "successful_slurm_job_id", "other_attempt_job_ids"))
-        writer.writerows(chunk_rows)
-
-    workflow_logs = sorted((experiment / ".snakemake" / "log").glob("*.log"))
-    final_logs = [
-        path
-        for path in workflow_logs
-        if "2 of 2 steps (100%) done"
-        in path.read_text(encoding="utf-8", errors="replace")
-    ]
-    if not final_logs:
-        raise RuntimeError("Final successful Snakemake combination log not found")
-    final_log = max(final_logs)
-    copy_file(final_log, package / "logs" / "final_combination.log")
-    for log in workflow_logs:
-        if log != final_log:
-            copy_file(log, package / "logs" / "workflow_attempts" / log.name)
-
-    verify_ship_exclusions(package)
-    write_checksums(package)
-    verify_checksums(package)
-    return package
-
-
-def build_clayton(source: Path, staging: Path) -> Path:
-    validate_clayton_source(source)
-    package = staging / f"clayton_7d-softwarex-{VERSION}"
-    copy_tree(source, package)
+def build_package(source: Path, staging: Path, name: str) -> Path:
+    """Package the reviewed files without regenerating scientific outputs."""
+    package = staging / name
+    # Keep the reviewed directory untouched; checksums belong to the archive copy.
+    shutil.copytree(source, package)
     write_checksums(package)
     verify_checksums(package)
     return package
@@ -295,7 +163,11 @@ def write_outer_manifest(output: Path) -> None:
         writer.writerow(("filename", "size_bytes", "sha256"))
         for path in files:
             writer.writerow((path.name, path.stat().st_size, sha256(path)))
-    checksummed = sorted(path for path in output.iterdir() if path.is_file() and path.name != "SHA256SUMS")
+    checksummed = sorted(
+        path
+        for path in output.iterdir()
+        if path.is_file() and path.name != "SHA256SUMS"
+    )
     with (output / "SHA256SUMS").open("w", encoding="utf-8", newline="\n") as stream:
         for path in checksummed:
             stream.write(f"{sha256(path)}  {path.name}\n")
@@ -310,22 +182,34 @@ def main() -> None:
         help="directory that will contain the files uploaded to Zenodo",
     )
     parser.add_argument(
-        "--clayton-source",
+        "--clayton-staging",
         type=Path,
-        help="prepared Clayton package root; omit to build only ship_wake",
+        default=Path(__file__).resolve().parent / "staging/clayton_7d",
+        help="reviewed Clayton package directory",
+    )
+    parser.add_argument(
+        "--ship-staging",
+        type=Path,
+        default=Path(__file__).resolve().parent / "staging/ship_wake",
+        help="reviewed ship-wake package directory",
+    )
+    parser.add_argument(
+        "--verify-only", action="store_true",
+        help="check both staging directories without creating archives",
     )
     args = parser.parse_args()
 
-    repo = Path(__file__).resolve().parents[2]
-    validate_ship_source(repo)
-    if args.clayton_source:
-        validate_clayton_source(args.clayton_source.resolve())
+    validate_clayton_source(args.clayton_staging.resolve())
+    validate_ship_source(args.ship_staging.resolve())
+    if args.verify_only:
+        print("Both staging directories verified; no files generated.")
+        return
     output = args.output_dir.resolve()
     if output.exists() and any(output.iterdir()):
         raise RuntimeError(f"Output directory must be empty: {output}")
     output.mkdir(parents=True, exist_ok=True)
 
-    common = repo / "experiments" / "zenodo"
+    common = Path(__file__).resolve().parent
     for name in (
         "README.md",
         "CITATION.cff",
@@ -337,9 +221,10 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="trasgu-zenodo-") as temporary:
         staging = Path(temporary)
-        packages = [build_ship_wake(repo, staging)]
-        if args.clayton_source:
-            packages.append(build_clayton(args.clayton_source.resolve(), staging))
+        packages = [
+            build_package(args.clayton_staging.resolve(), staging, "clayton_7d-softwarex-v2"),
+            build_package(args.ship_staging.resolve(), staging, "ship_wake-softwarex-v2"),
+        ]
         for package in packages:
             make_archive(package, output / f"{package.name}.tar.gz")
 

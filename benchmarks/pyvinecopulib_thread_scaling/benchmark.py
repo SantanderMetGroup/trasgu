@@ -19,7 +19,7 @@ RAW_RESULTS_FILE = HERE / "results" / "thread_timings.csv"
 SUMMARY_FILE = HERE / "results" / "thread_summary.csv"
 
 COLUMNS = slice(0, 8)
-THREADS = [1, 2, 4, 8, 16, 20, 24, 28, 32, 36, 40, 44, 48]
+THREADS = [1, 2, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]
 REPETITIONS = 7
 RANDOM_SEED = 42
 

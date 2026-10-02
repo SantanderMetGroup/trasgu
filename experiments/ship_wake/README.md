@@ -1,86 +1,68 @@
 # Ship-wake experiment
 
-This experiment fits the eight variables selected from the ship-and-wake data
-set in `UI-1_ship_and_wake_data_for_TUDelft.csv`. The exhaustive search covers
-all 660,602,880 eight-dimensional Chimera matrices in 166 chunks.
+This experiment fits all 660,602,880 eight-dimensional Chimera matrices to
+179 complete observations from the ship-wave dataset. Eight columns are
+selected after removing incomplete rows and transformed into pseudo-observations.
+The exhaustive fit uses 166 chunks of at most 4,000,000 matrices. The Dissmann
+comparison uses the same observations and `pyvinecopulib.one_par`, maximum
+likelihood estimation and AIC selection.
 
-The source observations are not publicly available and are not distributed
-with this repository or the accompanying Zenodo record. To rerun the case
-study, an authorized copy must be placed at the path above before executing
-the preparation script.
+The first phase ran in `compute` with 8 workers per chunk; the remaining
+chunks were completed in `wncompute_ifca` with 32 workers after a disk-quota
+interruption. `original_execution/` preserves the workflow and configuration
+from the resumed phase. Its GPFS paths and SLURM resources describe that
+execution. `workflow/` contains helpers for preparing a new run.
 
-## Repository contents
+The source observations can be requested by contacting A. C. Muscalus,
+K. A. Haas and D. R. Webster, authors of *Observations of Primary Ship Waves
+at the Margins of a Confined Tidal River*, Journal of Waterway, Port, Coastal,
+and Ocean Engineering 150(5), 04024009 (2024),
+[doi:10.1061/JWPED5.WWENG-2062](https://doi.org/10.1061/JWPED5.WWENG-2062).
+Neither the source observations nor their row-level pseudo-observations are
+included in GitHub or Zenodo.
 
-- `PrepareData.py` creates the pseudo-observations used by both fits.
-- `trasgu.yaml` and `slurm_profile.yaml` are the configurations used for the
-  reported cluster execution.
-- `execution_snapshot` preserves those configurations and the exact Trasgu
-  `Snakefile` recovered from Snakemake's source cache.
-- `results/best_fits.txt` contains the compact fitted-model summary committed
-  to Git.
-- `processed_aic_cdf.npz` and `plot_large_aic_cdf.py` contain the processed
-  AIC distribution and generate the corresponding publication figure in
-  `results/`.
-- `zenodo/README.md` describes the raw result and logs kept outside Git for the
-  accompanying data deposit.
+`results/best_fits.txt` contains the compact fitted-model summary.
+`results/processed_aic_cdf.npz` contains the processed AIC distribution needed
+to reproduce the figure. The retained raw chunk is only a representative
+subset and cannot reconstruct this full distribution.
 
-The execution configuration is a provenance snapshot: it contains GPFS paths
-and SLURM settings for the original IFCA infrastructure. Adapt the Chimera
-Zarr path, profile, resources, and filesystem paths before repeating the run.
+The repository contains `workflow/`, `original_execution/`, `analysis/`,
+`results/` and `figures/`. The reviewed Zenodo package additionally contains
+selected logs and one representative raw chunk; see its
+[README](../zenodo/staging/ship_wake/README.md).
 
-## Running the experiment
+## Reproduce the figure
 
-Install Trasgu with the dependencies needed to prepare the data:
-
-```bash
-python -m pip install -e '.[benchmarks]'
-```
-
-Generate the pseudo-observations and run the exhaustive fit from the repository
-root:
+Install Trasgu with its benchmark dependencies. Run from the repository root:
 
 ```bash
-python experiments/ship_wake/PrepareData.py
-cd experiments/ship_wake
-trasgu_run --profile slurm
+python experiments/ship_wake/analysis/plot_large_aic_cdf.py
 ```
 
-`PrepareData.py` writes `unity_inbound.txt`, which is intentionally not stored
-in Git or Zenodo because it is derived from the non-public source data. The preserved
-configuration points to the local Chimera Zarr store used for the execution.
-Replace `chimera_url` with a path or URL accessible from the target system, for
-example:
+The script reads `results/processed_aic_cdf.npz`, applies `trasgu.mplstyle`,
+and writes PDF and PNG files under `figures/`, overwriting existing figures.
+No source observations are needed for this step.
 
-```yaml
-chimera_url: /scratch/user/chimera.zarr
-```
+## Repeat the fitting
 
-The Dissmann comparison uses the same prepared observations:
+Obtain the source CSV from the authors cited above and install Trasgu with
+its benchmark and SLURM dependencies (`python -m pip install -e '.[benchmarks,slurm]'`
+from a repository checkout). From the repository root:
 
 ```bash
-cd experiments/ship_wake
-python dissmann.py
+python experiments/ship_wake/workflow/prepare_run.py /scratch/ship-wake-repeat \
+  --data /path/to/UI-1_ship_and_wake_data_for_TUDelft.csv
+cd /scratch/ship-wake-repeat
+trasgu_run --profile slurm_profile.yaml --dry-run
+trasgu_run --profile slurm_profile.yaml
+python dissmann.py > dissmann.txt
 ```
 
-Generate the AIC distribution figure from the repository root:
-
-```bash
-python experiments/ship_wake/plot_large_aic_cdf.py
-```
-
-The script writes PDF and PNG versions to `experiments/ship_wake/results/`.
-
-## Archived data
-
-The Git repository deliberately excludes Snakemake state and exhaustive result
-tables. The accompanying Zenodo record contains one representative 4,000,000-
-row raw chunk, the final successful log for every chunk, the failed attempts
-needed to document retries, the final combination log, and integrity
-manifests. The deposited raw chunk is evidence of the output format and scale;
-it is not the complete 660,602,880-row result table.
-
-Original workflows, derived results, logs, and documentation are released
-under MIT. The source observations and row-level pseudo-observations are not
-included in the record.
-
-Zenodo data DOI: https://doi.org/10.5281/zenodo.21807187.
+The helper creates pseudo-observations and an adapted configuration in a new
+directory. Review the SLURM account, partition, memory and runtime before
+submission. Defaults match the resumed phase: `wncompute_ifca`, 32 workers
+and chunks of 4,000,000 matrices. Use `--partition` and `--workers` to change
+these settings. Chimera is read remotely by default; use `--chimera` for a
+local directory or another HTTP(S) URL. Nodes need access to the selected store.
+The archived scripts and configuration in `original_execution/` are preserved
+as execution records. Numerical results may depend on software versions.

@@ -4,8 +4,8 @@ message: >-
   accompanying Trasgu SoftwareX article.
 type: dataset
 title: Experimental data and derived results for the Trasgu SoftwareX article
-version: 1.0.0
-doi: 10.5281/zenodo.21807187
+version: 2.0.0-draft
+# Assign the new record DOI when publishing this revision.
 license: MIT
 authors:
   - family-names: Fernández-Quiruelas

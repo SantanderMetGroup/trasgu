@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot empirical AIC differences for the 100 repeated 300-sample fits."""
+"""Plot empirical AIC differences for the 100 repeated 300-observation fits."""
 
 from __future__ import annotations
 
@@ -14,8 +14,10 @@ ANALYSIS_DIR = Path(__file__).resolve().parent
 EXPERIMENT_DIR = ANALYSIS_DIR.parent
 REPOSITORY_ROOT = ANALYSIS_DIR.parents[2]
 STYLE_FILE = REPOSITORY_ROOT / "styles" / "trasgu.mplstyle"
-INPUT_FILE = EXPERIMENT_DIR / "repeated_300" / "results" / "aic_comparison.csv"
-OUTPUT_FILE = EXPERIMENT_DIR / "repeated_300" / "results" / "aic_differences.png"
+if not STYLE_FILE.exists():
+    STYLE_FILE = EXPERIMENT_DIR / "styles" / "trasgu.mplstyle"
+INPUT_FILE = EXPERIMENT_DIR / "results" / "aic_comparison.csv"
+OUTPUT_FILE = EXPERIMENT_DIR / "figures" / "aic_differences.png"
 
 
 def main() -> None:
@@ -60,7 +62,9 @@ def main() -> None:
     )
     ax.legend()
     fig.tight_layout()
-    fig.savefig(OUTPUT_FILE)
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    for extension in ("png", "pdf", "svg"):
+        fig.savefig(OUTPUT_FILE.with_suffix(f".{extension}"))
     plt.close(fig)
     print(OUTPUT_FILE)
 

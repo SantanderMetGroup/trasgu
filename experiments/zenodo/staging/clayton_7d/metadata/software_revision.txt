@@ -1,0 +1,18 @@
+Execution revision provenance
+=============================
+
+Last Git commit preceding the first logged execution:
+
+c07f8651a637191429f2f5affb17e3d8de4ab04d
+Add snakemake to Print the best fit in a file
+2026-07-21 14:09:09 +0200
+
+The execution logs begin on 2026-07-22. The exact Git worktree status was not
+recorded in those logs, so this commit is a candidate
+revision, not proof of the exact code executed; local changes may have existed. Exact
+copies of the workflow, configuration, and helper scripts used for the runs
+are included under original_execution. The reproduction helpers
+were added later and are not part of that historical snapshot.
+
+Publication release/tag recorded in the source v1 deposit: v0.1.0
+Publication commit recorded in the source v1 deposit: f580ad35a4bc030e4a6cf160d3cf9a141a9002c3

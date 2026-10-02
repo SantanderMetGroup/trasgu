@@ -148,8 +148,8 @@ Article-scale case studies live under `experiments/`, separately from the
 small examples packaged with Trasgu:
 
 - `clayton_7d` contains the code snapshots and compact results for repeated
-  seven-dimensional synthetic fits and sample-size scaling. Complete outputs
-  are prepared for the accompanying Zenodo data deposit.
+  seven-dimensional synthetic fits with 300 observations. The generated inputs
+  and selected outputs are distributed through Zenodo.
 - `ship_wake` contains the eight-variable ship-wake case study.
 
 See [`experiments/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/experiments/README.md) for the distinction
@@ -174,6 +174,21 @@ and reproduction commands.
 
 Scientific validation workflows live under `validation/`. They compare Trasgu
 with reference fits and, where applicable, the previous manual implementation.
+The [mixed-family validation](validation/mixed_5d/README.md) checks Trasgu
+against a sequential loop over the original TU Delft matrices using a
+five-variable Clayton–Gaussian generating model.
+
+The [ESREL validation guide](validation/esrel/README.md) provides a complete
+local example associated with *Recent experience with the use of Chimera for
+vine copula modelling and future challenges*: seeded data, checks of all 480
+five-variable structures against the manual implementation, reference fits,
+and reproducible figures. Start with a one-simulation pilot:
+
+```bash
+uv sync --frozen --extra benchmarks
+uv run --no-sync python validation/esrel/run_validation.py --run-dir validation/esrel/runs/reproduce-pilot --iterations 1 --cores 1
+```
+
 See [`validation/README.md`](https://github.com/SantanderMetGroup/trasgu/blob/develop/validation/README.md) for the available cases and
 reproduction commands.
 

@@ -1,0 +1,12 @@
+README.md
+LICENSE
+MANIFEST.txt
+workflow/
+original_execution/
+analysis/
+results/
+figures/
+styles/
+raw_results/
+logs/
+metadata/

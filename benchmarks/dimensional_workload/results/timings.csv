@@ -1,6 +1,6 @@
-variables,observations,matrices,estimated_total_minutes,display_time
-4,300,24,0.01,< 1 second
-5,300,480,0.42,27 s
-6,300,23040,31,31 min
-7,300,2580480,4898,3.4 days
-8,300,660602880,1810202,3.4 years
+variables,observations,matrices,estimated_total_minutes,fits_timed,method
+4,300,24,0.015011,24,measured
+5,300,480,0.532460,480,measured
+6,300,23040,37.382589,1000,extrapolated
+7,300,2580480,5918.520917,1000,extrapolated
+8,300,660602880,1980269.075429,1000,extrapolated

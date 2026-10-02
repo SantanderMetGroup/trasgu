@@ -1,0 +1,18 @@
+Clayton data package v2, prepared for review; not yet published
+============================================================
+
+Source: the locally downloaded clayton_7d-softwarex-v1 package from
+https://doi.org/10.5281/zenodo.21807187.
+
+This revision retains all 100 original 300-observation datasets, their
+reference fits, best-fit summaries, detailed best fits, configurations and
+main workflow logs. It retains a complete exhaustive result table only for
+iteration 99. Historical execution files and retained per-run files are
+copied without modification. The compact comparison adds an iteration ID;
+its numerical values are reconstructed from the retained results.
+
+The preparation helper and its workflow are later reproduction tools,
+separate from the historical original_execution directory.
+
+No new Zenodo DOI is assigned by this build. The DOI above identifies the
+source deposit; update the publication metadata after publishing a revision.

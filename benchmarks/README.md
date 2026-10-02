@@ -1,25 +1,25 @@
 # Benchmarks
 
-This directory contains controlled performance measurements. Scientific case
-studies and validation experiments belong under `experiments/` and
-`validation/`, respectively.
+This directory contains two controlled `pyvinecopulib` fitting benchmarks.
+Both use 300-observation synthetic inputs generated from high-dependence
+Clayton copulas, the `one_par` family set, maximum likelihood estimation,
+and AIC selection. The recorded results were obtained on an Intel(R) Xeon(R)
+Gold 5218 CPU @ 2.30GHz.
 
-## Benchmarks
+## Measurements
 
-- `dimensional_workload`: fitting workload for the Chimera collections from
-  four to eight variables, using 300 observations and one CPU core.
-- `pyvinecopulib_thread_scaling`: scaling of one fixed eight-dimensional fit
-  as the number of `pyvinecopulib` threads increases.
+- [Dimensional workload](dimensional_workload/README.md) measures full
+  Chimera collections for four and five variables on one core. It estimates
+  the six-, seven-, and eight-variable totals from 1,000 fits per dimension.
+- [Thread scaling](pyvinecopulib_thread_scaling/README.md) measures one fixed
+  eight-variable vine fit at 1–48 allocated CPUs, with seven repetitions
+  per CPU count.
 
-Both benchmarks use synthetic inputs generated with Clayton copulas, 300
-observations and high dependence. They were run on an Intel Xeon Silver 4208
-CPU at 2.10 GHz with `pyvinecopulib` 0.7.6.
+Each benchmark directory contains its script, recorded CSV results, a plotting
+script, generated figures, and a README with the commands and measurement
+protocol. Input data are in [`data/`](data/). The plotting scripts use
+[`styles/trasgu.mplstyle`](../styles/trasgu.mplstyle) and generate PNG, PDF,
+and SVG figures.
 
-All figures use `styles/trasgu.mplstyle`. Plotting scripts read CSV files under
-their benchmark's `results/` directory and write publication-ready figures to
-`figures/`.
-
-Trasgu worker scaling is deliberately not included. Measuring the complete
-Snakemake/SLURM stack would mix fitting time with scheduler, storage, and
-cluster-load effects, while these overheads are amortized in exhaustive
-seven- and eight-dimensional campaigns.
+Scientific case studies and validation are documented separately under
+[`experiments/`](../experiments/) and [`validation/`](../validation/).

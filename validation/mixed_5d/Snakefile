@@ -1,0 +1,122 @@
+from pathlib import Path
+import sys
+
+HERE = Path(workflow.basedir)
+RUN = Path(config.get('run_dir', HERE / 'runs' / 'default')).resolve()
+SIMULATIONS = range(1, int(config.get('iterations', 100)) + 1)
+SEED = int(config.get('seed', 20260929))
+OBSERVATIONS = int(config.get('observations', 300))
+PYTHON = sys.executable
+ASSETS = RUN / 'assets'
+CHIMERA = ASSETS / 'chimera.zarr'
+SAMPLE = str(RUN / 'simulations' / 'iteration_{iteration}')
+RESULT = RUN / 'results'
+CHIMERA_URL = config.get('chimera_url', 'http://meteo.unican.es/work/chimera.zarr')
+
+rule all:
+    input:
+        str(RESULT / 'summary.json'),
+        str(RESULT / 'aic_differences.png'),
+        str(RESULT / 'aic_differences.pdf'),
+        str(RESULT / 'aic_differences.svg'),
+
+rule prepare_matrices:
+    input:
+        script=str(HERE / 'scripts' / 'prepare_matrices.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
+        shared=str(HERE.parent / '_shared' / 'chimera.py'),
+        loader=str(HERE.parent / '_shared' / 'get_matrices.py'),
+    output:
+        manifest=str(ASSETS / 'manifest.json'),
+        store=directory(str(CHIMERA)),
+        legacy=directory(str(ASSETS / 'legacy')),
+    params:
+        destination=str(ASSETS),
+        url=CHIMERA_URL,
+    shell:
+        '{PYTHON:q} -m validation.mixed_5d.scripts.prepare_matrices {params.destination:q} --chimera-url {params.url:q}'
+
+rule simulate_inputs:
+    input:
+        manifest=str(ASSETS / 'manifest.json'),
+        script=str(HERE / 'scripts' / 'simulate_vines.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
+        template=str(HERE / 'config' / 'trasgu.yaml'),
+    output:
+        data=SAMPLE + '/vinecop_samples.txt',
+        config=SAMPLE + '/trasgu.yaml',
+        metadata=SAMPLE + '/simulation.json',
+    params:
+        destination=lambda w: SAMPLE.format(iteration=w.iteration),
+        seed=SEED,
+        observations=OBSERVATIONS,
+    shell:
+        '{PYTHON:q} -m validation.mixed_5d.scripts.simulate_vines {params.destination:q} --iteration {wildcards.iteration} '
+        '--seed {params.seed} --observations {params.observations} --chimera {CHIMERA:q}'
+
+rule run_trasgu_simulation:
+    input:
+        config=SAMPLE + '/trasgu.yaml',
+        data=SAMPLE + '/vinecop_samples.txt',
+        store=str(CHIMERA),
+    output:
+        SAMPLE + '/fit_iteration_{iteration}.csv',
+    log:
+        SAMPLE + '/trasgu_run.log',
+    params:
+        destination=lambda w: SAMPLE.format(iteration=w.iteration),
+    threads: 1
+    shell:
+        'cd {params.destination:q} && '
+        '{PYTHON:q} -m trasgu.cli.run --rerun-incomplete > {log:q} 2>&1'
+
+rule fit_reference_models:
+    input:
+        data=SAMPLE + '/vinecop_samples.txt',
+        script=str(HERE / 'scripts' / 'fit_reference_models.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
+    output:
+        SAMPLE + '/reference_fits_{iteration}.yaml',
+    shell:
+        '{PYTHON:q} -m validation.mixed_5d.scripts.fit_reference_models {input.data:q} {output:q}'
+
+rule run_manual_fit:
+    input:
+        data=SAMPLE + '/vinecop_samples.txt',
+        script=str(HERE.parent / '_shared' / 'manual_fit.py'),
+        loader=str(HERE.parent / '_shared' / 'get_matrices.py'),
+        matrices=str(ASSETS / 'legacy'),
+    output:
+        SAMPLE + '/manual_fits_{iteration}.csv',
+    shell:
+        '{PYTHON:q} -m validation._shared.manual_fit {input.data:q} {output:q} --matrices {input.matrices:q}'
+
+rule compare_aic:
+    input:
+        fits=expand(SAMPLE + '/fit_iteration_{iteration}.csv', iteration=SIMULATIONS),
+        refs=expand(SAMPLE + '/reference_fits_{iteration}.yaml', iteration=SIMULATIONS),
+        manual=expand(SAMPLE + '/manual_fits_{iteration}.csv', iteration=SIMULATIONS),
+        metadata=expand(SAMPLE + '/simulation.json', iteration=SIMULATIONS),
+        manifest=str(ASSETS / 'manifest.json'),
+        script=str(HERE / 'scripts' / 'compare_results.py'),
+        shared=str(HERE.parent / '_shared' / 'comparison.py'),
+    output:
+        csv=str(RESULT / 'aic_comparison.csv'),
+        summary=str(RESULT / 'summary.json'),
+    params:
+        iterations=len(SIMULATIONS),
+    shell:
+        '{PYTHON:q} -m validation.mixed_5d.scripts.compare_results {RUN:q} --iterations {params.iterations}'
+
+rule plot:
+    input:
+        csv=str(RESULT / 'aic_comparison.csv'),
+        script=str(HERE / 'scripts' / 'plot_results.py'),
+        shared=str(HERE.parent / '_shared' / 'comparison.py'),
+        style=str(HERE.parent.parent / 'styles' / 'trasgu.mplstyle'),
+    output:
+        str(RESULT / 'aic_differences.{extension}'),
+    wildcard_constraints:
+        extension='png|pdf|svg',
+    shell:
+        '{PYTHON:q} -m validation.mixed_5d.scripts.plot_results {input.csv:q} --output {output:q}'

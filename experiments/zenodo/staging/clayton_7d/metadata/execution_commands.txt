@@ -1,0 +1,24 @@
+Historical launch recorded in the retained Snakefile
+====================================================
+
+snakemake --snakefile Snakefile --config iterations=100 --cores 5
+
+The outer workflow first ran simulate.py 100. For each iteration it launched
+trasgu_run --profile <path>/slurm_profile.yaml from that iteration directory,
+selected the minimum-AIC candidate, and assembled aic_comparison.csv.
+Each nested workflow fitted 10 chunks with 16 workers per chunk. The outer
+--cores 5 value constrained the outer rules; it did not reserve just five
+CPUs for the entire distributed fitting campaign. Each nested profile had
+jobs: 100; that setting is a submission limit, not observed concurrency.
+
+The original observations are retained because simulate.py did not specify
+random seeds. Executing it again produces a new set of datasets.
+
+Current reproduction
+====================
+
+Use workflow/prepare_run.py to prepare a new directory with
+adapted paths and a profile for wncompute_meteo (or another supplied partition).
+The prepared Snakefile treats observations as external inputs and does not
+run the generator. It can therefore reuse the original observations without
+replacing them. See README.md for preparation, dry-run and launch commands.

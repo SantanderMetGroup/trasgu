@@ -13,3 +13,34 @@ src/trasgu/examples/*/fit_*.csv
 paper/
 /experiments/logs/
 /experiments/ship_wake/UI-1_ship_and_wake_data_for_TUDelft.csv
+
+# Local experiment data; upload bundles live in dist/.
+/experiments/zenodo/downloads/
+/experiments/zenodo/staging/*
+!/experiments/zenodo/staging/clayton_7d/
+/experiments/zenodo/staging/clayton_7d/*
+!/experiments/zenodo/staging/clayton_7d/README.md
+!/experiments/zenodo/staging/clayton_7d/LICENSE
+!/experiments/zenodo/staging/clayton_7d/MANIFEST.txt
+!/experiments/zenodo/staging/clayton_7d/metadata/
+/experiments/zenodo/staging/clayton_7d/metadata/*
+!/experiments/zenodo/staging/clayton_7d/metadata/*.txt
+
+!/experiments/zenodo/staging/ship_wake/
+/experiments/zenodo/staging/ship_wake/*
+!/experiments/zenodo/staging/ship_wake/README.md
+!/experiments/zenodo/staging/ship_wake/LICENSE
+!/experiments/zenodo/staging/ship_wake/MANIFEST.txt
+!/experiments/zenodo/staging/ship_wake/metadata/
+/experiments/zenodo/staging/ship_wake/metadata/*
+!/experiments/zenodo/staging/ship_wake/metadata/*.txt
+!/experiments/zenodo/staging/ship_wake/metadata/chunk_manifest.csv
+!/experiments/zenodo/staging/ship_wake/raw_results/
+/experiments/zenodo/staging/ship_wake/raw_results/*
+!/experiments/zenodo/staging/ship_wake/raw_results/README.md
+
+# Reproducible local ESREL runs (inputs, catalogues, logs and outputs).
+/validation/esrel/runs/
+
+# Generated mixed-family validation runs.
+/validation/mixed_5d/runs/

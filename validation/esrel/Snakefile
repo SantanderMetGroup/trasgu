@@ -1,195 +1,119 @@
-import csv
 from pathlib import Path
+import sys
 
-import yaml
-
-#snakemake --snakefile Snakefile --cores 5
-
-SNAKEFILE_DIR = Path(workflow.basedir)
-SIMULATIONS_DIR = SNAKEFILE_DIR / "simulations"
-SIMULATION_SCRIPT = SNAKEFILE_DIR / "simulate_vines.py"
-REFERENCE_FITS_SCRIPT = SNAKEFILE_DIR / "fit_reference_models.py"
-MANUAL_FIT_SCRIPT = SNAKEFILE_DIR / "legacy" / "manual_fit.py"
-MANUAL_MATRICES_DIR = SNAKEFILE_DIR / "legacy"
-MANUAL_MATRIX_FILES = [
-    MANUAL_MATRICES_DIR / f"submats_5_T{tree}.pbz2" for tree in range(6, 9)
-]
-RESULTS_DIR = SNAKEFILE_DIR / "results"
-COMPARISON_FILE = RESULTS_DIR / "aic_comparison.csv"
-SIMULATIONS = range(1, 101)
-
-TRASGU_PROFILE = SNAKEFILE_DIR / "slurm_profile.yaml"
-TRASGU_ARGS = config.get("trasgu_args", "")
-
-
-def simulation_dir(wildcards):
-    return SIMULATIONS_DIR / f"iteration_{wildcards.iteration}"
-
+HERE = Path(workflow.basedir)
+RUN = Path(config.get('run_dir', HERE / 'runs' / 'default')).resolve()
+SIMULATIONS = range(1, int(config.get('iterations', 100)) + 1)
+SEED = int(config.get('seed', 20260928))
+OBSERVATIONS = int(config.get('observations', 300))
+PYTHON = sys.executable
+ASSETS = RUN / 'assets'
+CHIMERA = ASSETS / 'chimera.zarr'
+SAMPLE = str(RUN / 'simulations' / 'iteration_{iteration}')
+RESULT = RUN / 'results'
+CHIMERA_URL = config.get('chimera_url', 'http://meteo.unican.es/work/chimera.zarr')
 
 rule all:
     input:
-        str(COMPARISON_FILE)
+        str(RESULT / 'summary.json'),
+        str(RESULT / 'aic_differences.png'),
+        str(RESULT / 'aic_differences.pdf'),
+        str(RESULT / 'aic_differences.svg'),
 
+rule prepare_matrices:
+    input:
+        script=str(HERE / 'scripts' / 'prepare_matrices.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
+        loader=str(HERE / 'scripts' / 'manual' / 'get_matrices.py'),
+    output:
+        manifest=str(ASSETS / 'manifest.json'),
+        store=directory(str(CHIMERA)),
+        legacy=directory(str(ASSETS / 'legacy')),
+    params:
+        destination=str(ASSETS),
+        url=CHIMERA_URL,
+    shell:
+        '{PYTHON:q} {input.script:q} {params.destination:q} --chimera-url {params.url:q}'
 
 rule simulate_inputs:
+    input:
+        manifest=str(ASSETS / 'manifest.json'),
+        script=str(HERE / 'scripts' / 'simulate_vines.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
+        template=str(HERE / 'config' / 'trasgu.yaml'),
     output:
-        expand(
-            str(SIMULATIONS_DIR / "iteration_{iteration}" / "trasgu.yaml"),
-            iteration=SIMULATIONS,
-        ),
-        expand(
-            str(SIMULATIONS_DIR / "iteration_{iteration}" / "vinecop_samples.txt"),
-            iteration=SIMULATIONS,
-        )
+        data=SAMPLE + '/vinecop_samples.txt',
+        config=SAMPLE + '/trasgu.yaml',
+        metadata=SAMPLE + '/simulation.json',
+    params:
+        destination=lambda w: SAMPLE.format(iteration=w.iteration),
+        seed=SEED,
+        observations=OBSERVATIONS,
     shell:
-        "python {SIMULATION_SCRIPT}"
-
+        '{PYTHON:q} {input.script:q} {params.destination:q} --iteration {wildcards.iteration} '
+        '--seed {params.seed} --observations {params.observations} --chimera {CHIMERA:q}'
 
 rule run_trasgu_simulation:
     input:
-        config=str(SIMULATIONS_DIR / "iteration_{iteration}" / "trasgu.yaml"),
-        data=str(SIMULATIONS_DIR / "iteration_{iteration}" / "vinecop_samples.txt"),
+        config=SAMPLE + '/trasgu.yaml',
+        data=SAMPLE + '/vinecop_samples.txt',
+        store=str(CHIMERA),
     output:
-        str(SIMULATIONS_DIR / "iteration_{iteration}" / "fit_iteration_{iteration}.csv")
+        SAMPLE + '/fit_iteration_{iteration}.csv',
     log:
-        str(SIMULATIONS_DIR / "iteration_{iteration}" / "trasgu_run.log")
+        SAMPLE + '/trasgu_run.log',
     params:
-        run_dir=simulation_dir,
-        profile=TRASGU_PROFILE,
-        extra_args=TRASGU_ARGS,
+        destination=lambda w: SAMPLE.format(iteration=w.iteration),
+    threads: 1
     shell:
-        """
-        cd {params.run_dir}
-        trasgu_run --profile {params.profile} {params.extra_args} > {log} 2>&1
-        """
-
-
-rule select_best_vine:
-    input:
-        str(SIMULATIONS_DIR / "iteration_{iteration}" / "fit_iteration_{iteration}.csv")
-    output:
-        str(SIMULATIONS_DIR / "iteration_{iteration}" / "best_vine_fit.txt")
-    run:
-        with open(input[0], encoding="utf-8", newline="") as fit_file:
-            rows = csv.DictReader(fit_file)
-            best = min(rows, key=lambda row: float(row["aic"]))
-
-        with open(output[0], "w", encoding="utf-8", newline="") as best_file:
-            writer = csv.writer(best_file)
-            writer.writerow(
-                [best["vine_id"], best["n_parameters"], best["aic"]]
-            )
-
+        'cd {params.destination:q} && '
+        '{PYTHON:q} -m trasgu.cli.run --rerun-incomplete > {log:q} 2>&1'
 
 rule fit_reference_models:
     input:
-        data=str(SIMULATIONS_DIR / "iteration_{iteration}" / "vinecop_samples.txt"),
-        script=str(REFERENCE_FITS_SCRIPT),
+        data=SAMPLE + '/vinecop_samples.txt',
+        script=str(HERE / 'scripts' / 'fit_reference_models.py'),
+        model=str(HERE / 'scripts' / 'model.py'),
     output:
-        str(
-            SIMULATIONS_DIR
-            / "iteration_{iteration}"
-            / "reference_fits_{iteration}.yaml"
-        )
+        SAMPLE + '/reference_fits_{iteration}.yaml',
     shell:
-        "python {input.script} {input.data} {output}"
-
-
-rule download_manual_matrices:
-    input:
-        script=str(MANUAL_MATRICES_DIR / "download_matrices.sh")
-    output:
-        *map(str, MANUAL_MATRIX_FILES)
-    params:
-        matrix_dir=str(MANUAL_MATRICES_DIR)
-    shell:
-        "cd {params.matrix_dir} && bash {input.script}"
-
+        '{PYTHON:q} {input.script:q} {input.data:q} {output:q} --threads 1'
 
 rule run_manual_fit:
     input:
-        data=str(SIMULATIONS_DIR / "iteration_{iteration}" / "vinecop_samples.txt"),
-        script=str(MANUAL_FIT_SCRIPT),
-        matrices=map(str, MANUAL_MATRIX_FILES),
+        data=SAMPLE + '/vinecop_samples.txt',
+        script=str(HERE / 'scripts' / 'manual' / 'manual_fit.py'),
+        loader=str(HERE / 'scripts' / 'manual' / 'get_matrices.py'),
+        matrices=str(ASSETS / 'legacy'),
     output:
-        str(
-            SIMULATIONS_DIR
-            / "iteration_{iteration}"
-            / "manual_fits_{iteration}.csv"
-        )
+        SAMPLE + '/manual_fits_{iteration}.csv',
     shell:
-        "python {input.script} {input.data} {output}"
-
+        '{PYTHON:q} {input.script:q} {input.data:q} {output:q} --matrices {input.matrices:q}'
 
 rule compare_aic:
     input:
-        best_fits=expand(
-            str(SIMULATIONS_DIR / "iteration_{iteration}" / "best_vine_fit.txt"),
-            iteration=SIMULATIONS,
-        ),
-        reference_fits=expand(
-            str(
-                SIMULATIONS_DIR
-                / "iteration_{iteration}"
-                / "reference_fits_{iteration}.yaml"
-            ),
-            iteration=SIMULATIONS,
-        ),
-        manual_fits=expand(
-            str(
-                SIMULATIONS_DIR
-                / "iteration_{iteration}"
-                / "manual_fits_{iteration}.csv"
-            ),
-            iteration=SIMULATIONS,
-        ),
+        fits=expand(SAMPLE + '/fit_iteration_{iteration}.csv', iteration=SIMULATIONS),
+        refs=expand(SAMPLE + '/reference_fits_{iteration}.yaml', iteration=SIMULATIONS),
+        manual=expand(SAMPLE + '/manual_fits_{iteration}.csv', iteration=SIMULATIONS),
+        metadata=expand(SAMPLE + '/simulation.json', iteration=SIMULATIONS),
+        manifest=str(ASSETS / 'manifest.json'),
+        script=str(HERE / 'scripts' / 'compare_results.py'),
     output:
-        str(COMPARISON_FILE)
-    run:
-        with open(output[0], "w", encoding="utf-8", newline="") as output_file:
-            writer = csv.DictWriter(
-                output_file,
-                fieldnames=[
-                    "vine_id",
-                    "aic_vine",
-                    "manual_vine_id",
-                    "manual_aic",
-                    "aic_dissmann",
-                    "aic_fixed_matrix_clayton",
-                    "aic_ground_truth",
-                ],
-            )
-            writer.writeheader()
+        csv=str(RESULT / 'aic_comparison.csv'),
+        summary=str(RESULT / 'summary.json'),
+    params:
+        iterations=len(SIMULATIONS),
+    shell:
+        '{PYTHON:q} {input.script:q} {RUN:q} --iterations {params.iterations}'
 
-            for best_fit_path, reference_fits_path, manual_fits_path in zip(
-                input.best_fits, input.reference_fits, input.manual_fits
-            ):
-                with open(best_fit_path, encoding="utf-8", newline="") as best_file:
-                    vine_id, _, aic_vine = next(csv.reader(best_file))
-
-                with open(reference_fits_path, encoding="utf-8") as fits_file:
-                    reference_fits = yaml.safe_load(fits_file)
-
-                with open(
-                    manual_fits_path, encoding="utf-8", newline=""
-                ) as manual_file:
-                    manual_best = min(
-                        csv.DictReader(manual_file),
-                        key=lambda row: float(row["manual_aic"]),
-                    )
-
-                writer.writerow(
-                    {
-                        "vine_id": vine_id,
-                        "aic_vine": aic_vine,
-                        "manual_vine_id": manual_best["manual_vine_id"],
-                        "manual_aic": float(manual_best["manual_aic"]),
-                        "aic_dissmann": float(reference_fits["aic_dissmann"]),
-                        "aic_fixed_matrix_clayton": float(
-                            reference_fits["aic_fixed_matrix_clayton"]
-                        ),
-                        "aic_ground_truth": float(
-                            reference_fits["aic_ground_truth"]
-                        ),
-                    }
-                )
+rule plot:
+    input:
+        csv=str(RESULT / 'aic_comparison.csv'),
+        script=str(HERE / 'scripts' / 'plot_results.py'),
+        style=str(HERE.parent.parent / 'styles' / 'trasgu.mplstyle'),
+    output:
+        str(RESULT / 'aic_differences.{extension}'),
+    wildcard_constraints:
+        extension='png|pdf|svg',
+    shell:
+        '{PYTHON:q} {input.script:q} {input.csv:q} --output {output:q}'
