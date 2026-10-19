@@ -8,13 +8,66 @@ with correlation parameter 0.5; all rotations are zero.
 The generating matrix (Chimera ID 61) is defined in
 [`scripts/model.py`](scripts/model.py).
 
-**Both methods fit all 480 matrices to every dataset: 48,000 fits each.**
-Trasgu reads Chimera in Zarr; a manual Python loop reads the original TU Delft
-files. Both use identical observations and fitting controls. Generation uses
-families from `pyvinecopulib.one_par`; exhaustive fitting and Dißmann selection
-use `one_par`, AIC family selection and maximum likelihood estimation.
-The fixed reference retains the generating structure and families and refits
-parameters.
+### Generating configuration
+
+The generating families, parameters and structure are given by the following
+three arrays. In $C_M$ and $\theta_M$, row $t$ lists the bicopulas of tree $t$,
+and entries run from edge 1 to edge $5-t$ in `pyvinecopulib` order.
+All rotations are zero. Parameters are Clayton θ or Gaussian correlation ρ,
+as applicable; these are generating values, not fitted estimates.
+
+$$
+C_M = \left(\begin{array}{llll}
+\mathrm{Clayton} & \mathrm{Gaussian} & \mathrm{Gaussian} & \mathrm{Clayton} \\
+\mathrm{Clayton} & \mathrm{Gaussian} & \mathrm{Clayton} &  \\
+\mathrm{Clayton} & \mathrm{Gaussian} &  &  \\
+\mathrm{Clayton} &  &  &
+\end{array}\right)
+$$
+
+$$
+\theta_M = \left(\begin{array}{llll}
+3.1819 & 0.5 & 0.5 & 3.1819 \\
+3.1819 & 0.5 & 3.1819 &  \\
+3.1819 & 0.5 &  &  \\
+3.1819 &  &  &
+\end{array}\right)
+$$
+
+$$
+M = \left(\begin{array}{lllll}
+4 & 2 & 4 & 5 & 5 \\
+2 & 4 & 5 & 4 &  \\
+1 & 5 & 2 &  &  \\
+5 & 1 &  &  &  \\
+3 &  &  &  &
+\end{array}\right)
+$$
+
+The structure $M$ is Chimera ID 61, shared by both validation cases, in the
+anti-diagonal convention passed to `pyvinecopulib.Vinecop.from_structure`.
+Variable labels are 1–5. Blank entries in $M$ are unused zeros; the
+anti-diagonal runs from the bottom left to the top right. All three arrays
+have rows aligned to the left, with progressively fewer entries.
+
+The executable definition is [`scripts/model.py`](scripts/model.py).
+Simulation streams are derived from the master seed and iteration using
+`numpy.random.SeedSequence`, independently of job execution order.
+
+### Fitting and comparison
+
+**Both methods fit all 480 matrices to every dataset: 48,000 fits per method,
+forming 48,000 paired AIC comparisons (100 × 480).** Each pair uses the same
+dataset and candidate structure, fitted once by Trasgu and once by a manual
+sequential Python loop. Trasgu reads Chimera in Zarr; the manual loop reads
+the original TU Delft files. Both use identical observations and fitting controls.
+
+The generating families in $C_M$ define the simulated data. During
+exhaustive fitting and Dißmann selection, candidate families come from
+`pyvinecopulib.one_par`, with AIC family selection and maximum likelihood
+parameter estimation; they are not restricted to the generating assignment.
+The additional fixed-model reference retains the generating structure and
+families and re-estimates their parameters.
 
 ## Run
 
